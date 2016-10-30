@@ -1,0 +1,5 @@
+suites:
+    default:
+        namespace: Cmp\Http
+        psr4_prefix: Cmp\Http
+        spec_path: %paths.config%/tests
