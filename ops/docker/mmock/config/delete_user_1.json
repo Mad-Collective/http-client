@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "DELETE",
+    "path": "/users/1"
+  },
+  "response": {
+    "statusCode": 204
+  }
+}

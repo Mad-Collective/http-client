@@ -1,0 +1,45 @@
+# Service definition
+mmock:
+  # The endpoint is required
+  endpoint: http://mmock:8083
+
+  # At least one request is required too
+  requests:
+
+    list_users:
+      path: /users
+
+    get_user:
+      path: /users/${USER_ID}
+      # method: GET - GET is the default method
+
+    delete_user:
+      path: /users/${USER_ID}
+      method: DELETE
+
+    put_user:
+      path: /users/${USER_ID}
+      method: PUT
+      headers:
+        Content-Type: application/json
+      body:
+        first_name: ${FIRST_NAME}
+        last_name: ${LAST_NAME}
+
+    create_user:
+      path: /users
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        first_name: ${FIRST_NAME}
+        last_name: ${LAST_NAME}
+
+    update_user:
+      path: /users/${USER_ID}
+      method: PATCH
+      headers:
+        Content-Type: application/json
+      # body: We are going to pass only the values to update at request execution time
+
+# More services

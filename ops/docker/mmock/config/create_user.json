@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/users",
+    "headers": {
+      "Content-Type":["application/json"]
+    },
+    "body": "{\"first_name\":\"Foo\",\"last_name\":\"Bar\"}"
+  },
+  "response": {
+    "statusCode": 201,
+    "headers": {
+      "Content-Type":["application/json"]
+    },
+    "body": "{\"id\":\"3\",\"first_name\":\"Foo\",\"last_name\":\"Bar\"}"
+  }
+}
