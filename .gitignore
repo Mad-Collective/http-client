@@ -1,0 +1,5 @@
+vendor
+code-coverage
+bin/phpspec
+bin/behat
+bin/clover.xml
