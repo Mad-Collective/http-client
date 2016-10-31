@@ -28,13 +28,16 @@ $coolApi = ClientBuilder::create()
     ->withYamlConfig('requests.yml')
     ->build('my_cool_api');
 
-$coolApi = $client->json('get_user', ['user_id' => $userId]);
+$user = $client->json('get_user', ['user_id' => $userId]);
+
+echo "Hello ".$user->name;
 ```
 ## Table of contents
 - [Installation](#installation)
 - [Requirements](#requirements)
-  - [Compatibility](#compatibility)
+  - [Optional requirements](#optional-requirements)
   - [Additional requirements](#additional-requirements)
+- [Compatibility](#compatibility)
 - [Usage](#usage)
   - [Defining a configuration](#defining-a-configuration)
   - [Building the client](#building-the-client)
@@ -77,22 +80,13 @@ composer require guzzlehttp/guzzle "^6.0"
 
 __*Note:*__ This package relies on the implementation of guzzle for the [PSR-7: HTTP message interfaces](http://www.php-fig.org/psr/psr-7/)
 
-### Compatibility
-This library has been tested with the following PHP versions and setups
-
-PHP | guzzlehttp/psr7 | guzzlehttp/guzzle | result
---- | --------------- | ----------------- | ------
-5.5.25 | 1.3.1 | 6.2.2 | :white_check_mark:
-5.6.16 | 1.3.1 | 6.2.2 | :white_check_mark:
-7.0.7 | 1.3.1 | 6.2.2 | :white_check_mark:
- hhvm | 1.3.1  | 6.2.2 | :white_check_mark:
-
 ### Additional requirements
 #### Guzzle
 The library allows to use different senders to execute requests; and adapter for `guzzlehttp/guzzle` it's included in the library **but  you must require the dependency manually**
 ```bash
 composer require guzzlehttp/guzzle "^6.0"
 ```
+### Optional requirements
 #### Yaml parsing
 If you want to use a Yaml file as a configuration source you can:
 a) Use you own parser and pass the config as an array
@@ -117,6 +111,16 @@ If you use pimple for building your dependencies you can use the provider `Cmp\H
 composer require pimple/pimple "^3.0"
 ```
 __*NOTE*:__ See the annex for how to register the provider
+---
+### Compatibility
+This library has been tested with the following PHP versions and setups
+
+PHP | guzzlehttp/psr7 | guzzlehttp/guzzle | result
+--- | --------------- | ----------------- | ------
+5.5.25 | 1.3.1 | 6.2.2 | :white_check_mark:
+5.6.16 | 1.3.1 | 6.2.2 | :white_check_mark:
+7.0.7 | 1.3.1 | 6.2.2 | :white_check_mark:
+ hhvm | 1.3.1  | 6.2.2 | :white_check_mark:
 
 ---
 ## Usage
@@ -164,7 +168,7 @@ __NOTE:__ You can see a full-fledged sample configuration file in `config-sample
 
 #### Request configuration values
 The request configuration allows the set almost the same options as the service configuration, overwriting the values provided for the service, this allows to define a general behaviour for a service but tweak some options for specific requests, like for example, allowing a longer timeout
-* `path` (**require**): Defines the path that follows the endpoint
+* `path` (**required**): Defines the path that follows the endpoint
 * `method`: Defines the HTTP method for the request. `GET` by default
 * `headers`: A key-value array with the headers to add to this request
 * `query`: A key-value array with the query parameters to append in the URI of this request
@@ -193,9 +197,9 @@ The library allows to indicate the presence of dynamic values in this configurat
 
 ##### Replacing a placeholder in the request
 To replace the placeholders, pass the values as paramters when creating the request 
-```php
+```yaml
 secure_api:
-  endpoint: https//topsecret.com
+  endpoint: https://topsecret.com
   headers:
     api_key: MyPersonalApiKey
     token: ${TOKEN}
@@ -206,8 +210,8 @@ secure_api:
 
 ```php
 $request = $client->create('secure_api', 'get_user', [
-  'token'   => $oath->sign($secret),
-  'user_id' => $userId
+    'token'   => $oath->sign($secret),
+    'user_id' => $userId
 ]);
 ```
 
