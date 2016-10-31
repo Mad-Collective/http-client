@@ -124,10 +124,10 @@ class RunTests extends Command
     private function getFilter()
     {
         $filter = new PHP_CodeCoverage_Filter();
-        $filter->addDirectoryToWhitelist($this->getPath('src'));
-        $filter->addDirectoryToBlacklist($this->getPath('tests'));
-        $filter->addDirectoryToBlacklist($this->getPath('bin'));
-        $filter->addDirectoryToBlacklist($this->getPath('vendor'));
+        $filter->addDirectoryToWhitelist('src');
+        $filter->addDirectoryToBlacklist('tests');
+        $filter->addDirectoryToBlacklist('bin');
+        $filter->addDirectoryToBlacklist('vendor');
 
         return $filter;
     }
