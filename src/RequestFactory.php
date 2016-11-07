@@ -173,7 +173,7 @@ class RequestFactory implements RequestFactoryInterface
     private function getParamOrFail(array $config, $param)
     {
         if (!isset($config[$param])) {
-            throw new RuntimeException($param);
+            throw new RuntimeException("The configuration is missing the required parameter: $param");
         }
 
         return $config[$param];
