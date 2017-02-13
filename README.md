@@ -56,16 +56,7 @@ echo "Hello ".$user->name;
   - [Development environment](#development-environment)  
 
 ## Installation
-Add this repo to your composer.json
-```javascript
-"repositories": {
-  "pluggit/http-client": {
-    "type": "vcs",
-    "url": "git@github.com:CMProductions/http-client.git"
-  }
-}
-```
-Then require it as usual
+Require the package as usual
 ```bash
 composer require pluggit/http-client
 ```
