@@ -1,6 +1,6 @@
 {
     "name": "pluggit/http-client",
-    "description": "A library to provide cache interface access to different backend caches",
+    "description": "A config-driven library to execute HTTP requests",
     "type": "library",
     "license": "MIT",
     "require": {
