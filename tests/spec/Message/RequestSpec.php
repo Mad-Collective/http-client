@@ -96,6 +96,31 @@ class RequestSpec extends ObjectBehavior
             ->shouldReturn('application/json');
     }
 
+    function it_sets_content_type_header_when_setting_post_params()
+    {
+        $this->beConstructedWith(
+            $this->method,
+            $this->uri,
+            [],
+            $this->body,
+            $this->version,
+            $this->retries,
+            $this->options
+        );
+        $request = $this->withPost(['foo' => 'bar']);
+        $request
+            ->getHeaderLine('Content-Type')
+            ->shouldReturn('application/x-www-form-urlencoded');
+    }
+
+    function it_doesnt_overwrite_content_type_header_when_setting_post_params()
+    {
+        $request = $this->withPost(['foo' => 'bar']);
+        $request
+            ->getHeaderLine('Content-Type')
+            ->shouldNotReturn('application/x-www-form-urlencoded');
+    }
+
     function it_can_be_converted_to_string()
     {
         $message = "\r\n-------------"
