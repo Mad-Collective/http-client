@@ -99,16 +99,24 @@ class Request extends GuzzleRequest
      */
     public function withPost(array $params)
     {
-        $body = $this->isJson() ? json_encode($params) : http_build_query($params);
+        $request = $this;
+        if ($this->isJson()) {
+            $body = json_encode($params);
+        } else {
+            $body = http_build_query($params);
+            if (!$this->hasHeader('Content-Type')) {
+                $request = $this->withHeader('Content-Type', 'application/x-www-form-urlencoded');
+            }
+        }
 
         return new self(
-            $this->getMethod(),
-            $this->getUri(),
-            $this->getHeaders(),
+            $request->getMethod(),
+            $request->getUri(),
+            $request->getHeaders(),
             $body,
-            $this->getProtocolVersion(),
-            $this->getRetries(),
-            $this->getOptions()
+            $request->getProtocolVersion(),
+            $request->getRetries(),
+            $request->getOptions()
         );
     }
 

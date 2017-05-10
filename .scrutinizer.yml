@@ -8,8 +8,6 @@ build:
             version: 5.5.25
     tests:
         before:
-            - git clone https://github.com/jmartin82/mmock.git
-            - docker build mmock -t jordimartin/mmock
             - docker run -d -v $PWD/ops/docker/mmock/config:/config -p 8082:8082 -p 8083:8083 jordimartin/mmock
             - echo '127.0.0.1 mmock' >> /etc/hosts
         override:
