@@ -64,6 +64,25 @@ class RequestFactorySpec extends ObjectBehavior
         ]);
     }
 
+    function it_can_build_a_post_request_with_the_correct_header()
+    {
+        $request = $this->create('service', 'request_2', [
+            'body_1' => 'body 1',
+            'body_2' => 'body,2',
+            'body_3' => 'body/3',
+        ]);
+
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        $request->getHeaders()->shouldReturn([
+            'Host'         => ['service.com'],
+            'Content-Type' => ['application/x-www-form-urlencoded'],
+            'header_1'     => ['${HEADER_1}'],
+        ]);
+
+        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2&body_3=body%2F3');
+    }
+
     function it_fails_if_a_service_is_missing()
     {
         $this->shouldThrow(RuntimeException::class)->duringCreate('unknown', 'foo');
@@ -120,6 +139,12 @@ service:
       options: 
         timeout: 5
         json: true
+    request_2:
+      path: /request_2
+      method: POST
+      body:
+        body_1: extra ${BODY_1}
+        body_2: ${BODY_2}
 
 no_endpoint:
   foo: bar
