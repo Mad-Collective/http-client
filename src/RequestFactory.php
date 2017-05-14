@@ -38,15 +38,15 @@ class RequestFactory implements RequestFactoryInterface
         $service      = $this->getServiceParams($config);
         $request      = $this->getRequestParams($config, $requestKey, $service);
         $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
-        $body         = $this->buildBody($request['body'], $this->isJson($request['headers']));
         $placeholders = $this->getPlaceholders($parameters);
         $values       = array_values($parameters);
+        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $parameters);
 
         return $this->buildRequest(
             $request['method'],
             $this->replace($uri, $placeholders, $values),
             $this->replaceAll($request['headers'], $placeholders, $values),
-            $body !== null ? $this->replace($body, $placeholders, $values) : $body,
+            $body,
             $request['version'],
             $request['retries'],
             $request['options']
@@ -137,19 +137,27 @@ class RequestFactory implements RequestFactoryInterface
 
     /**
      * @param array $post
-     * @param bool  $isJson
+     * @param array $headers
+     * @param array $placeholders
+     * @param array $values
+     * @param array $parameters
      *
      * @return string
      */
-    private function buildBody(array $post, $isJson)
+    private function buildBody(array $post, array &$headers, array $placeholders, array $values, array $parameters)
     {
         if (count($post) == 0) {
             return null;
         }
 
-        return ($isJson) 
-            ? json_encode($post)
-            : urldecode(http_build_query($post));
+        if ($this->isJson($headers)) {
+            return $this->replace(json_encode($post), $placeholders, $values);
+        }
+
+        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        $post = array_merge($parameters, $this->replaceAll($post, $placeholders, $values));
+
+        return http_build_query($post);
     }
 
     /**
