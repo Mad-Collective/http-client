@@ -128,13 +128,13 @@ my_users_api:
     timeout: 2
   requests:
     list_users:
-      url: /users
+      path: /users
       options:
         timeout: 15
     get_user:
-      url: /users/${USER_ID}
+      path: /users/${USER_ID}
     create_user:
-      url: /users/${USER_ID}
+      path: /users/${USER_ID}
       headers: 
         - Content-Type: application/json
       method: POST
@@ -241,7 +241,7 @@ $client = $builder->build();
 #### Building a service client
 To build a service client specify the name of the service when building the client in the last step of the builder
 ```php
-$myServiceApi = $builder->builder('my_service');
+$myServiceApi = $builder->build('my_service');
 ```
 
 #### Customizing the builds
@@ -286,10 +286,10 @@ $builder->withConsoleDebug();
 ### Creating a request
 To create a request you need to identify the service and the request that you want. Additionally you can pass dynamic values to substitute placeholders
 ```php
-$request = $client->create('weather', 'forecast', ['city' => $city]);
+$request = $client->request('weather', 'forecast', ['city' => $city]);
 
 // Service specific clients do not need the service name
-$request = $weather->create('forecast', ['city' => $city]);
+$request = $weather->request('forecast', ['city' => $city]);
 ```
 
 The requests created are `Cmp\Http\Message\Request` intances, implementing `Psr\Http\Message\RequestInterface`, making them suitable to share between libraries and frameworks
