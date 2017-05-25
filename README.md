@@ -128,13 +128,13 @@ my_users_api:
     timeout: 2
   requests:
     list_users:
-      url: /users
+      path: /users
       options:
         timeout: 15
     get_user:
-      url: /users/${USER_ID}
+      path: /users/${USER_ID}
     create_user:
-      url: /users/${USER_ID}
+      path: /users/${USER_ID}
       headers: 
         - Content-Type: application/json
       method: POST
@@ -241,7 +241,7 @@ $client = $builder->build();
 #### Building a service client
 To build a service client specify the name of the service when building the client in the last step of the builder
 ```php
-$myServiceApi = $builder->builder('my_service');
+$myServiceApi = $builder->build('my_service');
 ```
 
 #### Customizing the builds
