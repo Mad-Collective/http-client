@@ -286,10 +286,10 @@ $builder->withConsoleDebug();
 ### Creating a request
 To create a request you need to identify the service and the request that you want. Additionally you can pass dynamic values to substitute placeholders
 ```php
-$request = $client->create('weather', 'forecast', ['city' => $city]);
+$request = $client->request('weather', 'forecast', ['city' => $city]);
 
 // Service specific clients do not need the service name
-$request = $weather->create('forecast', ['city' => $city]);
+$request = $weather->request('forecast', ['city' => $city]);
 ```
 
 The requests created are `Cmp\Http\Message\Request` intances, implementing `Psr\Http\Message\RequestInterface`, making them suitable to share between libraries and frameworks
