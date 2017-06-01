@@ -154,7 +154,9 @@ class RequestFactory implements RequestFactoryInterface
             return $this->replace(json_encode($post), $placeholders, $values);
         }
 
-        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        if(!isset($headers['Content-Type'])) {
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        }
         $post = array_merge($parameters, $this->replaceAll($post, $placeholders, $values));
 
         return http_build_query($post);

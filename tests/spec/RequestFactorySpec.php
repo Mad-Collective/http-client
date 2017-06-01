@@ -76,7 +76,7 @@ class RequestFactorySpec extends ObjectBehavior
 
         $request->getHeaders()->shouldReturn([
             'Host'         => ['service.com'],
-            'Content-Type' => ['application/x-www-form-urlencoded'],
+            'Content-Type' => ['application/xml'],
             'header_1'     => ['${HEADER_1}'],
         ]);
 
