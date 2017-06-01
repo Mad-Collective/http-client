@@ -83,6 +83,24 @@ class RequestFactorySpec extends ObjectBehavior
         $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2&body_3=body%2F3');
     }
 
+    function it_can_build_a_post_request_with_default_value_when_content_type_is_not_set()
+    {
+        $request = $this->create('missing_content_type', 'request', [
+            'body_1' => 'body 1',
+            'body_2' => 'body,2',
+            'body_3' => 'body/3',
+        ]);
+
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        $request->getHeaders()->shouldReturn([
+            'Host'         => ['service.com'],
+            'Content-Type' => ['application/x-www-form-urlencoded']
+        ]);
+
+        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2&body_3=body%2F3');
+    }
+
     function it_fails_if_a_service_is_missing()
     {
         $this->shouldThrow(RuntimeException::class)->duringCreate('unknown', 'foo');
@@ -157,6 +175,23 @@ missing_request:
   requests:
     no_this_one:
       path: /foo
+      
+missing_content_type:
+  endpoint: http://service.com/v1
+  requests:
+      request:
+        path: /request_3/${PATH}
+        method: POST
+        query:
+          query_3: three
+        body:
+            body_1: extra ${BODY_1}
+            body_2: ${BODY_2}
+        version: 1.3
+        retries: 4
+        options: 
+        timeout: 5
+        json: true
 YAML;
     }
 }
