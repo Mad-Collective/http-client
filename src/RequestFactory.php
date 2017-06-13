@@ -40,7 +40,7 @@ class RequestFactory implements RequestFactoryInterface
         $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
         $placeholders = $this->getPlaceholders($parameters);
         $values       = array_values($parameters);
-        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $parameters);
+        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values);
 
         return $this->buildRequest(
             $request['method'],
@@ -140,11 +140,10 @@ class RequestFactory implements RequestFactoryInterface
      * @param array $headers
      * @param array $placeholders
      * @param array $values
-     * @param array $parameters
      *
      * @return string
      */
-    private function buildBody(array $post, array &$headers, array $placeholders, array $values, array $parameters)
+    private function buildBody(array $post, array &$headers, array $placeholders, array $values)
     {
         if (count($post) == 0) {
             return null;
@@ -157,7 +156,7 @@ class RequestFactory implements RequestFactoryInterface
         if(!isset($headers['Content-Type'])) {
             $headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
-        $post = array_merge($parameters, $this->replaceAll($post, $placeholders, $values));
+        $post = $this->replaceAll($post, $placeholders, $values);
 
         return http_build_query($post);
     }

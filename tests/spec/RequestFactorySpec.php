@@ -80,7 +80,7 @@ class RequestFactorySpec extends ObjectBehavior
             'header_1'     => ['${HEADER_1}'],
         ]);
 
-        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2&body_3=body%2F3');
+        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2');
     }
 
     function it_can_build_a_post_request_with_default_value_when_content_type_is_not_set()
@@ -88,7 +88,6 @@ class RequestFactorySpec extends ObjectBehavior
         $request = $this->create('missing_content_type', 'request', [
             'body_1' => 'body 1',
             'body_2' => 'body,2',
-            'body_3' => 'body/3',
         ]);
 
         $request->shouldBeAnInstanceOf(Request::class);
@@ -97,8 +96,7 @@ class RequestFactorySpec extends ObjectBehavior
             'Host'         => ['service.com'],
             'Content-Type' => ['application/x-www-form-urlencoded']
         ]);
-
-        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2&body_3=body%2F3');
+        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2');
     }
 
     function it_fails_if_a_service_is_missing()
@@ -180,7 +178,7 @@ missing_content_type:
   endpoint: http://service.com/v1
   requests:
       request:
-        path: /request_3/${PATH}
+        path: /request
         method: POST
         query:
           query_3: three
