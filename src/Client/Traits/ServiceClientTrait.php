@@ -44,6 +44,14 @@ trait ServiceClientTrait
     /**
      * {@inheritdoc}
      */
+    public function executeFromJson($request, \JsonSerializable $jsonSerializable)
+    {
+        return $this->send($this->requestFromJson($request, $jsonSerializable));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function body($request, array $parameters = [])
     {
         return $this->execute($request, $parameters)->getBody();

@@ -48,4 +48,15 @@ class ServiceClient extends AbstractClient implements ServiceClientInterface
     {
         return $this->createRequest($this->service, $request, $parameters);
     }
+
+    /**
+     * @param string            $request
+     * @param \JsonSerializable $jsonSerializable
+     *
+     * @return Request
+     */
+    public function requestFromJson($request, \JsonSerializable $jsonSerializable)
+    {
+        return $this->createRequestFromJson($this->service, $request, $jsonSerializable);
+    }
 }

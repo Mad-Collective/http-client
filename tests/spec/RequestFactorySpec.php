@@ -64,6 +64,30 @@ class RequestFactorySpec extends ObjectBehavior
         ]);
     }
 
+    function it_can_build_a_request_from_json_serializable(
+        \JsonSerializable $jsonSerializable
+    )
+    {
+        $jsonSerializable->jsonSerialize()->willReturn(["key" => "value"]);
+
+        $request = $this->createFromJson('json', 'json_request', $jsonSerializable);
+
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        $request->getHeaders()->shouldReturn([
+            'Host'         => ['json_request.com'],
+            'Content-Type' => ['application/json']
+        ]);
+
+        $request->getUri()
+            ->__toString()
+            ->shouldReturn(
+                'http://json_request.com/v1/json'
+            );
+
+        $request->getBody()->__toString()->shouldBe('{"key":"value"}');
+    }
+
     function it_can_build_a_post_request_with_the_correct_header()
     {
         $request = $this->create('service', 'request_2', [
@@ -117,6 +141,13 @@ class RequestFactorySpec extends ObjectBehavior
     function it_fails_if_the_request_is_not_defined()
     {
         $this->shouldThrow(RuntimeException::class)->duringCreate('missing_request', 'foo');
+    }
+
+    function it_fails_create_from_json_if_header_is_not_json(
+        \JsonSerializable $jsonSerializable
+    )
+    {
+        $this->shouldThrow(RuntimeException::class)->duringCreateFromJson('xml', 'xml_request', $jsonSerializable);
     }
 
     private function getConfigSample()
@@ -190,6 +221,22 @@ missing_content_type:
         options: 
         timeout: 5
         json: true
+        
+json:
+  endpoint: http://json_request.com/v1
+  requests:
+    json_request:
+      path: /json
+      headers:
+        Content-Type: application/json
+        
+xml:
+  endpoint: http://xml_request.com/v1
+  requests:
+    xml_request:
+      path: /json
+      headers:
+        Content-Type: application/xml        
 YAML;
     }
 }

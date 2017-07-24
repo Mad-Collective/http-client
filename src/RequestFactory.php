@@ -54,6 +54,33 @@ class RequestFactory implements RequestFactoryInterface
     }
 
     /**
+     * Builds a request based on the service and request name, using provided $jsonSerializable as request body
+     *
+     * @param string            $serviceKey
+     * @param string            $requestKey
+     * @param \JsonSerializable $jsonSerializableBody
+     * @return mixed
+     */
+    public function createFromJson($serviceKey, $requestKey, \JsonSerializable $jsonSerializableBody) {
+        $config       = $this->getParamOrFail($this->config, $serviceKey);
+        $service      = $this->getServiceParams($config);
+        $request      = $this->getRequestParams($config, $requestKey, $service);
+        $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
+
+        $this->headerIsJsonOrFail($request['headers']);
+
+        return $this->buildRequest(
+            $request['method'],
+            $uri,
+            $request['headers'],
+            json_encode($jsonSerializableBody),
+            $request['version'],
+            $request['retries'],
+            $request['options']
+        );
+    }
+
+    /**
      * @param string $method
      * @param string $uri
      * @param array  $headers
@@ -245,5 +272,11 @@ class RequestFactory implements RequestFactoryInterface
 
         // http://greenbytes.de/tech/webdav/rfc2616.html#rfc.section.14.17
         return strpos($headers['Content-Type'], 'application/json') === 0;
+    }
+
+    private function headerIsJsonOrFail(array $headers) {
+        if (!$this->isJson($headers)) {
+            throw new  RuntimeException("Content-Type header is not equal to \'application/json'");
+        }
     }
 }

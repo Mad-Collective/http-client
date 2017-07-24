@@ -39,6 +39,12 @@ class ServiceClientSpec extends ObjectBehavior
         $this->request('bar', [1])->shouldReturn($request);
     }
 
+    function it_can_create_requests_from_json(RequestFactoryInterface $factory, Request $request, \JsonSerializable $jsonSerializable)
+    {
+        $factory->createFromJson('service', 'json_request', $jsonSerializable)->willReturn($request);
+        $this->requestFromJson('json_request', $jsonSerializable)->shouldReturn($request);
+    }
+
     function it_handle_errors_creating_requests(RequestFactoryInterface $factory, LoggerInterface $logger)
     {
         $exception = new RuntimeException("foo");
@@ -50,6 +56,21 @@ class ServiceClientSpec extends ObjectBehavior
             'message'   => Argument::any(),
             'service'   => 'service',
             'request'   => 'bar',
+            'exception' => $exception
+        ]);
+    }
+
+    function it_handle_errors_creating_requests_from_json(RequestFactoryInterface $factory, LoggerInterface $logger, \JsonSerializable $jsonSerializable)
+    {
+        $exception = new RuntimeException("foo");
+        $factory->createFromJson('service', 'json', $jsonSerializable)->willThrow($exception);
+
+        $this->shouldThrow($exception)->duringRequestFromJson('json', $jsonSerializable);
+
+        $logger->error("Error building request {service}.{request}. {message}", [
+            'message'   => Argument::any(),
+            'service'   => 'service',
+            'request'   => 'json',
             'exception' => $exception
         ]);
     }

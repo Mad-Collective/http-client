@@ -23,6 +23,16 @@ interface ServiceClientInterface extends ClientInterface
     public function execute($request, array $parameters = []);
 
     /**
+     * Creates a request from the configuration, using json serializable input at body and immediately executes it
+     *
+     * @param string           $request
+     * @param \JsonSerializable $jsonSerializable
+     *
+     * @return Response
+     */
+    public function executeFromJson($request, \JsonSerializable $jsonSerializable);
+
+    /**
      * Creates a request from the configuration and immediately executes it returning only the body
      *
      * @param string $request
@@ -61,4 +71,14 @@ interface ServiceClientInterface extends ClientInterface
      * @return Request
      */
     public function request($request, array $parameters = []);
+
+    /**
+     * Creates a request based on the configuration using json serializable object as the body
+     *
+     * @param string            $request
+     * @param \JsonSerializable $jsonSerializable
+     *
+     * @return Request
+     */
+    public function requestFromJson($request, \JsonSerializable $jsonSerializable);
 }

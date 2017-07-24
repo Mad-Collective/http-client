@@ -46,6 +46,31 @@ trait RequestBuilderTrait
     }
 
     /**
+     * Builds a request with json body
+     *
+     * @param string            $service
+     * @param string            $requestId
+     * @param \JsonSerializable $jsonSerializable
+     *
+     * @return Request
+     *
+     * @throws RequestBuildException
+     * @throws RuntimeException
+     */
+    protected function createRequestFromJson($service, $requestId, \JsonSerializable $jsonSerializable)
+    {
+        try {
+            return $this->factory()->createFromJson($service, $requestId, $jsonSerializable);
+        } catch (RuntimeException $exception) {
+            $this->logBuildError($service, $requestId, $exception);
+            throw $exception;
+        } catch (\Exception $exception) {
+            $this->logBuildError($service, $requestId, $exception);
+            throw new RequestBuildException($exception);
+        }
+    }
+
+    /**
      * @param string     $service
      * @param string     $request
      * @param \Exception $exception
