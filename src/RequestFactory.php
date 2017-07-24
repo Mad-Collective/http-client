@@ -82,56 +82,6 @@ class RequestFactory implements RequestFactoryInterface
         );
     }
 
-    private function getPlaceholdersFromUriAndHeader($uri, $request) {
-        $result = [];
-        $placeholders = $this->getPlaceholdersInString($uri);
-        $placeholders[] = $this->getPlaceholdersInArray($request['headers']);
-
-        array_walk_recursive($placeholders,function($v, $k) use (&$result){ $result[] = $v; });
-
-        return $result;
-    }
-
-    private function getPlaceholderValuesFromJson(array $placeholders = [], \JsonSerializable $jsonSerializable) {
-        $json = \GuzzleHttp\json_encode($jsonSerializable);
-        $jsonAsArray = \GuzzleHttp\json_decode($json, true);
-        $values = [];
-
-        foreach ($placeholders as $placeholder) {
-            $keysArray = explode('.', $placeholder);
-
-            if (!$keysArray) {
-                $keysArray = [$placeholder];
-            }
-
-            $currentArray = $jsonAsArray;
-            $currentValue = [];
-
-            foreach ($keysArray as $key) {
-
-                $key = str_replace('${', '', $key);
-                $key = str_replace('}', '', $key);
-                $key = strtolower($key);
-
-                if (isset($currentArray[$key])) {
-
-                    $currentValue = $currentArray[$key];
-                    if (is_array($currentValue)) {
-                        $currentArray = $currentValue;
-                    }
-                }
-            }
-
-            if (!is_array($currentValue) && !empty($currentValue)) {
-                $values[$placeholder] = $currentValue;
-            } else {
-                throw new RuntimeException("Could not find any matching value for placeholder: $placeholder");
-            }
-        }
-
-        return $values;
-    }
-
     /**
      * @param string $method
      * @param string $uri
@@ -353,9 +303,72 @@ class RequestFactory implements RequestFactoryInterface
         return strpos($headers['Content-Type'], 'application/json') === 0;
     }
 
+    /**
+     * @param array $headers
+     */
     private function headerIsJsonOrFail(array $headers) {
         if (!$this->isJson($headers)) {
             throw new  RuntimeException("Content-Type header is not equal to \'application/json'");
         }
+    }
+
+    /**
+     * @param string $uri
+     * @param array  $request
+     * @return array
+     */
+    private function getPlaceholdersFromUriAndHeader($uri, $request) {
+        $result = [];
+        $placeholders = $this->getPlaceholdersInString($uri);
+        $placeholders[] = $this->getPlaceholdersInArray($request['headers']);
+
+        array_walk_recursive($placeholders,function($v, $k) use (&$result){ $result[] = $v; });
+
+        return $result;
+    }
+
+    /**
+     * @param array $placeholders
+     * @param \JsonSerializable $jsonSerializable
+     * @return array
+     */
+    private function getPlaceholderValuesFromJson(array $placeholders = [], \JsonSerializable $jsonSerializable) {
+        $json = \GuzzleHttp\json_encode($jsonSerializable);
+        $jsonAsArray = \GuzzleHttp\json_decode($json, true);
+        $values = [];
+
+        foreach ($placeholders as $placeholder) {
+            $keysArray = explode('.', $placeholder);
+
+            if (!$keysArray) {
+                $keysArray = [$placeholder];
+            }
+
+            $currentArray = $jsonAsArray;
+            $currentValue = [];
+
+            foreach ($keysArray as $key) {
+
+                $key = str_replace('${', '', $key);
+                $key = str_replace('}', '', $key);
+                $key = strtolower($key);
+
+                if (isset($currentArray[$key])) {
+
+                    $currentValue = $currentArray[$key];
+                    if (is_array($currentValue)) {
+                        $currentArray = $currentValue;
+                    }
+                }
+            }
+
+            if (!is_array($currentValue) && !empty($currentValue)) {
+                $values[$placeholder] = $currentValue;
+            } else {
+                throw new RuntimeException("Could not find any matching value for placeholder: $placeholder");
+            }
+        }
+
+        return $values;
     }
 }
