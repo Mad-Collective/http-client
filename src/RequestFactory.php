@@ -66,18 +66,70 @@ class RequestFactory implements RequestFactoryInterface
         $service      = $this->getServiceParams($config);
         $request      = $this->getRequestParams($config, $requestKey, $service);
         $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
+        $placeholders = $this->getPlaceholdersFromUriAndHeader($uri, $request);
 
+        $values = $this->getPlaceholderValuesFromJson($placeholders, $jsonSerializableBody);
         $this->headerIsJsonOrFail($request['headers']);
 
         return $this->buildRequest(
             $request['method'],
-            $uri,
-            $request['headers'],
+            $this->replace($uri, $placeholders, $values),
+            $this->replaceAll($request['headers'], $placeholders, $values),
             json_encode($jsonSerializableBody),
             $request['version'],
             $request['retries'],
             $request['options']
         );
+    }
+
+    private function getPlaceholdersFromUriAndHeader($uri, $request) {
+        $result = [];
+        $placeholders = $this->getPlaceholdersInString($uri);
+        $placeholders[] = $this->getPlaceholdersInArray($request['headers']);
+
+        array_walk_recursive($placeholders,function($v, $k) use (&$result){ $result[] = $v; });
+
+        return $result;
+    }
+
+    private function getPlaceholderValuesFromJson(array $placeholders = [], \JsonSerializable $jsonSerializable) {
+        $json = \GuzzleHttp\json_encode($jsonSerializable);
+        $jsonAsArray = \GuzzleHttp\json_decode($json, true);
+        $values = [];
+
+        foreach ($placeholders as $placeholder) {
+            $keysArray = explode('.', $placeholder);
+
+            if (!$keysArray) {
+                $keysArray = [$placeholder];
+            }
+
+            $currentArray = $jsonAsArray;
+            $currentValue = [];
+
+            foreach ($keysArray as $key) {
+
+                $key = str_replace('${', '', $key);
+                $key = str_replace('}', '', $key);
+                $key = strtolower($key);
+
+                if (isset($currentArray[$key])) {
+
+                    $currentValue = $currentArray[$key];
+                    if (is_array($currentValue)) {
+                        $currentArray = $currentValue;
+                    }
+                }
+            }
+
+            if (!is_array($currentValue) && !empty($currentValue)) {
+                $values[$placeholder] = $currentValue;
+            } else {
+                throw new RuntimeException("Could not find any matching value for placeholder: $placeholder");
+            }
+        }
+
+        return $values;
     }
 
     /**
@@ -227,6 +279,33 @@ class RequestFactory implements RequestFactoryInterface
         foreach (array_keys($parameters) as $key) {
             $keys[] = strtoupper(sprintf('${%s}', $key));
         }
+
+        return $keys;
+    }
+
+    /**
+     * @param array $parameters
+     * @return array
+     */
+    private function getPlaceholdersInArray(array $parameters = [])
+    {
+        $keys = [];
+
+        foreach ($parameters as $parameter) {
+            $keys[] = $this->getPlaceholdersInString($parameter);
+        }
+
+        return $keys;
+    }
+
+    /**
+     * @param string $parameter
+     * @return array
+     */
+    private function getPlaceholdersInString($parameter)
+    {
+        $keys = [];
+        preg_match_all('/\${[a-zA-z._0-9]+}/', $parameter, $keys);
 
         return $keys;
     }

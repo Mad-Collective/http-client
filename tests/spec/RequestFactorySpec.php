@@ -69,9 +69,7 @@ class RequestFactorySpec extends ObjectBehavior
     )
     {
         $jsonSerializable->jsonSerialize()->willReturn(["key" => "value"]);
-
         $request = $this->createFromJson('json', 'json_request', $jsonSerializable);
-
         $request->shouldBeAnInstanceOf(Request::class);
 
         $request->getHeaders()->shouldReturn([
@@ -121,6 +119,90 @@ class RequestFactorySpec extends ObjectBehavior
             'Content-Type' => ['application/x-www-form-urlencoded']
         ]);
         $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2');
+    }
+
+    function it_can_build_a_request_from_json_serializable_replacing_nested_placeholder_in_url(
+        \JsonSerializable $jsonSerializable
+    )
+    {
+        $jsonSerializable->jsonSerialize()->willReturn(["user" => ["id" => 12]]);
+        $request = $this->createFromJson('json', 'replace_path', $jsonSerializable);
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        $request->getHeaders()->shouldReturn([
+            'Host'         => ['json_request.com'],
+            'Content-Type' => ['application/json']
+        ]);
+
+        $request->getUri()
+            ->__toString()
+            ->shouldReturn(
+                'http://json_request.com/v1/json/12'
+            );
+
+        $request->getBody()->__toString()->shouldBe('{"user":{"id":12}}');
+    }
+
+    function it_can_build_a_request_from_json_serializable_replacing_two_placeholders_in_url(
+        \JsonSerializable $jsonSerializable
+    )
+    {
+        $jsonSerializable->jsonSerialize()->willReturn(["user" => "mietek", "id" => 12]);
+        $request = $this->createFromJson('json', 'replace_double_path', $jsonSerializable);
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        $request->getHeaders()->shouldReturn([
+            'Host'         => ['json_request.com'],
+            'Content-Type' => ['application/json']
+        ]);
+
+        $request->getUri()
+            ->__toString()
+            ->shouldReturn(
+                'http://json_request.com/v1/json/mietek/12'
+            );
+
+        $request->getBody()->__toString()->shouldBe('{"user":"mietek","id":12}');
+    }
+
+    function it_can_build_a_request_from_json_serializable_replacing_two_placeholders_in_headers(
+        \JsonSerializable $jsonSerializable
+    )
+    {
+        $jsonSerializable->jsonSerialize()->willReturn(["user" => "mietek", "auth" => "no_auth", "header_3" => "header"]);
+        $request = $this->createFromJson('json', 'replace_headers', $jsonSerializable);
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        $request->getHeaders()->shouldReturn([
+            'Host'         => ['json_request.com'],
+            'Content-Type' => ['application/json'],
+            'Authorization'=> ['no_auth'],
+            "header_3"     => ['header']
+        ]);
+
+        $request->getUri()
+            ->__toString()
+            ->shouldReturn(
+                'http://json_request.com/v1/json'
+            );
+
+        $request->getBody()->__toString()->shouldBe('{"user":"mietek","auth":"no_auth","header_3":"header"}');
+    }
+
+    function it_fails_if_placeholder_cannot_be_found_in_json_body(
+        \JsonSerializable $jsonSerializable
+    )
+    {
+        $jsonSerializable->jsonSerialize()->willReturn(["user" => "mietek", "mietek" => "no_auth", "header_3" => "header"]);
+        $this->shouldThrow(RuntimeException::class)->duringCreateFromJson('json', 'replace_headers', $jsonSerializable);
+    }
+
+    function it_fails_if_placeholder_cannot_be_found_in_exact_place_in_json_body(
+        \JsonSerializable $jsonSerializable
+    )
+    {
+        $jsonSerializable->jsonSerialize()->willReturn(["user" => "mietek", "auth" => ["value" => "auth"], "header_3" => "header"]);
+        $this->shouldThrow(RuntimeException::class)->duringCreateFromJson('json', 'replace_headers', $jsonSerializable);
     }
 
     function it_fails_if_a_service_is_missing()
@@ -229,6 +311,20 @@ json:
       path: /json
       headers:
         Content-Type: application/json
+    replace_path:
+      path: /json/${USER.ID}
+      headers:
+        Content-Type: application/json
+    replace_double_path:
+       headers:
+        Content-Type: application/json
+       path: /json/${USER}/${ID}
+    replace_headers:
+      path: /json
+      headers:
+        Content-Type: application/json
+        Authorization: ${AUTH}
+        header_3: ${HEADER_3}
         
 xml:
   endpoint: http://xml_request.com/v1
