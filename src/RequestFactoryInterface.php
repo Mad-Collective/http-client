@@ -15,5 +15,5 @@ interface RequestFactoryInterface
      *
      * @return Request
      */
-    public function create($serviceKey, $requestKey, array $parameters);
+    public function create($serviceKey, $requestKey, array $parameters = []);
 }

@@ -5,6 +5,7 @@ namespace Cmp\Http\Client\Traits;
 use Cmp\Http\Exception\RequestExecutionException;
 use Cmp\Http\Exception\RuntimeException;
 use Cmp\Http\Message\Request;
+use Cmp\Http\Message\Response;
 
 /**
  * Use this trait in your custom client to have a default implementation for the shortcuts
@@ -39,6 +40,16 @@ trait ServiceClientTrait
     public function execute($request, array $parameters = [])
     {
         return $this->send($this->request($request, $parameters));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeFromJson($request, \JsonSerializable $jsonSerializable)
+    {
+        $request = $this->request($request)->withJsonPost($jsonSerializable->jsonSerialize());
+
+        return $this->send($request);
     }
 
     /**

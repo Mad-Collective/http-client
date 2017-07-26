@@ -89,6 +89,23 @@ class ServiceClientSpec extends ObjectBehavior
         $this->execute('bar', [1])->shouldBeAnInstanceOf(Response::class);
     }
 
+    function it_can_execute_a_request_with_json_in_one_step(
+        RequestFactoryInterface $factory,
+        Request $request,
+        SenderInterface $sender,
+        ResponseInterface $psrResponse,
+        \JsonSerializable $jsonSerializable
+    ) {
+        $params = ['key' => 'value'];
+        $jsonSerializable->jsonSerialize()->willReturn($params);
+
+        $this->configureResponse(null, $psrResponse, $sender, $request, $factory, []);
+        $request->getRetries()->willReturn(1);
+        $request->withJsonPost($params)->willReturn($request);
+
+        $this->executeFromJson('bar', $jsonSerializable)->shouldBeAnInstanceOf(Response::class);
+    }
+
     function it_can_execute_a_request_and_get_the_body(
         RequestFactoryInterface $factory,
         Request $request,
@@ -148,10 +165,11 @@ class ServiceClientSpec extends ObjectBehavior
         ResponseInterface $psrResponse,
         SenderInterface $sender,
         Request $request,
-        RequestFactoryInterface $factory = null
+        RequestFactoryInterface $factory = null,
+        $parameters = [1]
     ) {
         if ($factory) {
-            $factory->create('service', 'bar', [1])->willReturn($request);
+            $factory->create('service', 'bar', $parameters)->willReturn($request);
         }
 
         $psrResponse->getStatusCode()->willReturn(200);

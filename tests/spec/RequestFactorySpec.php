@@ -189,7 +189,7 @@ missing_content_type:
         retries: 4
         options: 
         timeout: 5
-        json: true
+        json: true   
 YAML;
     }
 }
