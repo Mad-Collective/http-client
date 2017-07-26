@@ -54,35 +54,6 @@ class RequestFactory implements RequestFactoryInterface
     }
 
     /**
-     * Builds a request based on the service and request name, using provided $jsonSerializable as request body
-     *
-     * @param string            $serviceKey
-     * @param string            $requestKey
-     * @param \JsonSerializable $jsonSerializableBody
-     * @return mixed
-     */
-    public function createFromJson($serviceKey, $requestKey, \JsonSerializable $jsonSerializableBody) {
-        $config       = $this->getParamOrFail($this->config, $serviceKey);
-        $service      = $this->getServiceParams($config);
-        $request      = $this->getRequestParams($config, $requestKey, $service);
-        $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
-        $placeholders = $this->getPlaceholdersFromUriAndHeader($uri, $request);
-
-        $values = $this->getPlaceholderValuesFromJson($placeholders, $jsonSerializableBody);
-        $this->headerIsJsonOrFail($request['headers']);
-
-        return $this->buildRequest(
-            $request['method'],
-            $this->replace($uri, $placeholders, $values),
-            $this->replaceAll($request['headers'], $placeholders, $values),
-            json_encode($jsonSerializableBody),
-            $request['version'],
-            $request['retries'],
-            $request['options']
-        );
-    }
-
-    /**
      * @param string $method
      * @param string $uri
      * @param array  $headers
@@ -234,33 +205,6 @@ class RequestFactory implements RequestFactoryInterface
     }
 
     /**
-     * @param array $parameters
-     * @return array
-     */
-    private function getPlaceholdersInArray(array $parameters = [])
-    {
-        $keys = [];
-
-        foreach ($parameters as $parameter) {
-            $keys = $this->getPlaceholdersInString($parameter);
-        }
-
-        return array_values($keys);
-    }
-
-    /**
-     * @param string $parameter
-     * @return array
-     */
-    private function getPlaceholdersInString($parameter)
-    {
-        $keys = [];
-        preg_match_all('/\${[a-zA-z._0-9]+}/', $parameter, $keys);
-
-        return $keys;
-    }
-
-    /**
      * @param string $option
      * @param array  $placeholders
      * @param array  $values
@@ -301,94 +245,5 @@ class RequestFactory implements RequestFactoryInterface
 
         // http://greenbytes.de/tech/webdav/rfc2616.html#rfc.section.14.17
         return strpos($headers['Content-Type'], 'application/json') === 0;
-    }
-
-    /**
-     * @param array $headers
-     */
-    private function headerIsJsonOrFail(array $headers) {
-        if (!$this->isJson($headers)) {
-            throw new  RuntimeException("Content-Type header is not equal to \'application/json'");
-        }
-    }
-
-    /**
-     * @param string $uri
-     * @param array  $request
-     * @return array
-     */
-    private function getPlaceholdersFromUriAndHeader($uri, $request) {
-        $placeholders = $this->getPlaceholdersInString($uri);
-        array_merge($placeholders, $this->getPlaceholdersInArray($request['headers']));
-
-        return $this->flattenArray($placeholders);
-    }
-
-    /**
-     * Looks for placeholders' values in the $jsonSerializable object after transforming it to a JSON object
-     *
-     * @param array $placeholders
-     * @param \JsonSerializable $jsonSerializable
-     * @return array
-     */
-    private function getPlaceholderValuesFromJson(array $placeholders = [], \JsonSerializable $jsonSerializable) {
-        $json = json_encode($jsonSerializable);
-        $jsonAsArray = json_decode($json, true);
-        $values = [];
-
-        foreach ($placeholders as $placeholder) {
-            $keysArray = explode('.', $placeholder);
-
-            if (!$keysArray) {
-                $keysArray = [$placeholder];
-            }
-
-            $currentArray = $jsonAsArray;
-            $currentValue = [];
-
-            foreach ($keysArray as $key) {
-
-                $key = $this->transformPlaceholderToJsonKey($key);
-
-                if (isset($currentArray[$key])) {
-
-                    $currentValue = $currentArray[$key];
-                    if (is_array($currentValue)) {
-                        $currentArray = $currentValue;
-                    }
-                }
-            }
-
-            if (!is_array($currentValue) && !empty($currentValue)) {
-                $values[$placeholder] = $currentValue;
-            } else {
-                throw new RuntimeException("Could not find any matching value for placeholder: $placeholder");
-            }
-        }
-
-        return $values;
-    }
-
-    private function transformPlaceholderToJsonKey($placeholder) {
-
-        return strtolower(str_replace('}', '', str_replace('${', '', $placeholder)));
-    }
-
-    /**
-     * Flattens an array
-     *
-     * @param array $array
-     * @return array
-     */
-    private function flattenArray($array)
-    {
-        if (empty($array)) {
-            return [];
-        }
-
-        $result = [];
-        array_walk_recursive($array, function($v, $k) use (&$result){ $result[] = $v;});
-
-        return $result;
     }
 }

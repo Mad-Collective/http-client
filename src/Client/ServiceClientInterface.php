@@ -71,14 +71,4 @@ interface ServiceClientInterface extends ClientInterface
      * @return Request
      */
     public function request($request, array $parameters = []);
-
-    /**
-     * Creates a request based on the configuration using json serializable object as the body
-     *
-     * @param string            $request
-     * @param \JsonSerializable $jsonSerializable
-     *
-     * @return Request
-     */
-    public function requestFromJson($request, \JsonSerializable $jsonSerializable);
 }

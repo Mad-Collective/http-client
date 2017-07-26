@@ -39,12 +39,6 @@ class ServiceClientSpec extends ObjectBehavior
         $this->request('bar', [1])->shouldReturn($request);
     }
 
-    function it_can_create_requests_from_json(RequestFactoryInterface $factory, Request $request, \JsonSerializable $jsonSerializable)
-    {
-        $factory->createFromJson('service', 'json_request', $jsonSerializable)->willReturn($request);
-        $this->requestFromJson('json_request', $jsonSerializable)->shouldReturn($request);
-    }
-
     function it_handle_errors_creating_requests(RequestFactoryInterface $factory, LoggerInterface $logger)
     {
         $exception = new RuntimeException("foo");
@@ -56,21 +50,6 @@ class ServiceClientSpec extends ObjectBehavior
             'message'   => Argument::any(),
             'service'   => 'service',
             'request'   => 'bar',
-            'exception' => $exception
-        ]);
-    }
-
-    function it_handle_errors_creating_requests_from_json(RequestFactoryInterface $factory, LoggerInterface $logger, \JsonSerializable $jsonSerializable)
-    {
-        $exception = new RuntimeException("foo");
-        $factory->createFromJson('service', 'json', $jsonSerializable)->willThrow($exception);
-
-        $this->shouldThrow($exception)->duringRequestFromJson('json', $jsonSerializable);
-
-        $logger->error("Error building request {service}.{request}. {message}", [
-            'message'   => Argument::any(),
-            'service'   => 'service',
-            'request'   => 'json',
             'exception' => $exception
         ]);
     }
@@ -108,6 +87,23 @@ class ServiceClientSpec extends ObjectBehavior
         $this->configureResponse(null, $psrResponse, $sender, $request, $factory);
 
         $this->execute('bar', [1])->shouldBeAnInstanceOf(Response::class);
+    }
+
+    function it_can_execute_a_request_with_json_in_one_step(
+        RequestFactoryInterface $factory,
+        Request $request,
+        SenderInterface $sender,
+        ResponseInterface $psrResponse,
+        \JsonSerializable $jsonSerializable
+    ) {
+        $params = ['key' => 'value'];
+        $jsonSerializable->jsonSerialize()->willReturn($params);
+
+        $this->configureResponse(null, $psrResponse, $sender, $request, $factory, []);
+        $request->getRetries()->willReturn(1);
+        $request->withJsonPost($params)->willReturn($request);
+
+        $this->executeFromJson('bar', $jsonSerializable)->shouldBeAnInstanceOf(Response::class);
     }
 
     function it_can_execute_a_request_and_get_the_body(
@@ -169,10 +165,11 @@ class ServiceClientSpec extends ObjectBehavior
         ResponseInterface $psrResponse,
         SenderInterface $sender,
         Request $request,
-        RequestFactoryInterface $factory = null
+        RequestFactoryInterface $factory = null,
+        $parameters = [1]
     ) {
         if ($factory) {
-            $factory->create('service', 'bar', [1])->willReturn($request);
+            $factory->create('service', 'bar', $parameters)->willReturn($request);
         }
 
         $psrResponse->getStatusCode()->willReturn(200);
