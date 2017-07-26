@@ -242,10 +242,10 @@ class RequestFactory implements RequestFactoryInterface
         $keys = [];
 
         foreach ($parameters as $parameter) {
-            $keys[] = $this->getPlaceholdersInString($parameter);
+            $keys = $this->getPlaceholdersInString($parameter);
         }
 
-        return $keys;
+        return array_values($keys);
     }
 
     /**
@@ -318,23 +318,22 @@ class RequestFactory implements RequestFactoryInterface
      * @return array
      */
     private function getPlaceholdersFromUriAndHeader($uri, $request) {
-        $result = [];
         $placeholders = $this->getPlaceholdersInString($uri);
-        $placeholders[] = $this->getPlaceholdersInArray($request['headers']);
+        array_merge($placeholders, $this->getPlaceholdersInArray($request['headers']));
 
-        array_walk_recursive($placeholders,function($v, $k) use (&$result){ $result[] = $v; });
-
-        return $result;
+        return $this->flattenArray($placeholders);
     }
 
     /**
+     * Looks for placeholders' values in the $jsonSerializable object after transforming it to a JSON object
+     *
      * @param array $placeholders
      * @param \JsonSerializable $jsonSerializable
      * @return array
      */
     private function getPlaceholderValuesFromJson(array $placeholders = [], \JsonSerializable $jsonSerializable) {
-        $json = \GuzzleHttp\json_encode($jsonSerializable);
-        $jsonAsArray = \GuzzleHttp\json_decode($json, true);
+        $json = json_encode($jsonSerializable);
+        $jsonAsArray = json_decode($json, true);
         $values = [];
 
         foreach ($placeholders as $placeholder) {
@@ -349,9 +348,7 @@ class RequestFactory implements RequestFactoryInterface
 
             foreach ($keysArray as $key) {
 
-                $key = str_replace('${', '', $key);
-                $key = str_replace('}', '', $key);
-                $key = strtolower($key);
+                $key = $this->transformPlaceholderToJsonKey($key);
 
                 if (isset($currentArray[$key])) {
 
@@ -370,5 +367,28 @@ class RequestFactory implements RequestFactoryInterface
         }
 
         return $values;
+    }
+
+    private function transformPlaceholderToJsonKey($placeholder) {
+
+        return strtolower(str_replace('}', '', str_replace('${', '', $placeholder)));
+    }
+
+    /**
+     * Flattens an array
+     *
+     * @param array $array
+     * @return array
+     */
+    private function flattenArray($array)
+    {
+        if (empty($array)) {
+            return [];
+        }
+
+        $result = [];
+        array_walk_recursive($array, function($v, $k) use (&$result){ $result[] = $v;});
+
+        return $result;
     }
 }
