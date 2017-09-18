@@ -78,7 +78,7 @@ class Request extends GuzzleRequest
     public function withQueryParameter($key, $value)
     {
         $query = $this->getUri()->getQuery();
-        parse_str(urldecode($query), $params);
+        parse_str($query, $params);
         $params[$key] = $value;
 
         return new self(

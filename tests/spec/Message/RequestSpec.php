@@ -66,6 +66,15 @@ class RequestSpec extends ObjectBehavior
             ->shouldReturn('http://foo.com/test?john=doe&jane=bar&new=nice');
     }
 
+    function it_can_add_a_query_parameter_with_special_chars_to_encode_on_consecutive_calls()
+    {
+        $this->withQueryParameter('email', 'name+1234@domain.com')
+            ->withQueryParameter('new', 'nice')
+            ->getUri()
+            ->__toString()
+            ->shouldReturn('http://foo.com/test?john=doe&jane=bar&email=name%2B1234%40domain.com&new=nice');
+    }
+
     function it_can_overwrite_a_query_parameter()
     {
         $this->withQueryParameter('john', 'not')
