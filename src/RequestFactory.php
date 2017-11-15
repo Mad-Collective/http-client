@@ -150,7 +150,7 @@ class RequestFactory implements RequestFactoryInterface
         }
 
         if ($this->isJson($headers)) {
-            return $this->replace(json_encode($post), $placeholders, $values);
+            return json_encode($this->replace($post, $placeholders, $values));
         }
 
         if(!isset($headers['Content-Type'])) {

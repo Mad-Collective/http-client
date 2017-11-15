@@ -64,6 +64,42 @@ class RequestFactorySpec extends ObjectBehavior
         ]);
     }
 
+    function it_can_build_a_proper_json_encoded_request()
+    {
+        $request = $this->create('service', 'request_1', [
+            'header_1' => 'replaced_header_1',
+            'header_3' => 'replaced_header_3',
+            'path'     => 'replaced_path',
+            'query_2'  => 'replaced_query_2',
+            'body_2'   => 'replaced_"body"_2'
+        ]);
+
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        $request->getHeaders()->shouldReturn([
+            'Host'         => ['service.com'],
+            'Content-Type' => ['application/json'],
+            'header_1'     => ['replaced_header_1'],
+            'header_3'     => ['replaced_header_3']
+        ]);
+
+        $request->getUri()
+            ->__toString()
+            ->shouldReturn(
+                'http://service.com/v1/request_1/replaced_path?'
+                .'query_1=query_one&query_2=replaced_query_2&query_3=three'
+            );
+
+        $request->getBody()->__toString()->shouldBe('{"body_1":"body_one","body_2":"replaced_\"body\"_2","body_3":"body_three"}');
+        $request->getProtocolVersion()->shouldBe('1.3');
+        $request->getRetries()->shouldBe(4);
+        $request->getOptions()->shouldBe([
+            'timeout' => 5,
+            'auth'    => ['user', 'password'],
+            'json'    => true,
+        ]);
+    }
+
     function it_can_build_a_post_request_with_the_correct_header()
     {
         $request = $this->create('service', 'request_2', [
