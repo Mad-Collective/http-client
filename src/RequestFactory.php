@@ -205,9 +205,9 @@ class RequestFactory implements RequestFactoryInterface
     }
 
     /**
-     * @param string $option
-     * @param array  $placeholders
-     * @param array  $values
+     * @param string|array $option
+     * @param array        $placeholders
+     * @param array        $values
      *
      * @return string
      */
