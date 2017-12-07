@@ -8,6 +8,7 @@ use Cmp\Http\RequestFactory;
 use Cmp\Http\RequestFactoryInterface;
 use PhpSpec\ObjectBehavior;
 use Symfony\Component\Yaml\Yaml;
+use Webmozart\Assert\Assert;
 
 /**
  * @mixin \Cmp\Http\RequestFactory
@@ -98,6 +99,24 @@ class RequestFactorySpec extends ObjectBehavior
             'auth'    => ['user', 'password'],
             'json'    => true,
         ]);
+    }
+
+    function it_will_preserve_the_type_for_json_encoded_requests()
+    {
+        $request = $this->create('service', 'request_3', [
+            'body_1' => 555,
+            'body_2' => 555,
+        ]);
+
+        $request->shouldBeAnInstanceOf(Request::class);
+
+        Assert::eq(
+            json_decode($request->getBody()->__toString()->getWrappedObject(), true),
+            [
+                'body_1' => 'extra 555',
+                'body_2' => 555,
+            ]
+        );
     }
 
     function it_can_build_a_post_request_with_the_correct_header()
@@ -197,6 +216,12 @@ service:
       body:
         body_1: extra ${BODY_1}
         body_2: ${BODY_2}
+    request_3:
+      headers:
+        Content-Type: application/json    
+      path: /request_2
+      method: POST
+      body: {body_1: 'extra ${BODY_1}', body_2: '${BODY_2}'}
 
 no_endpoint:
   foo: bar

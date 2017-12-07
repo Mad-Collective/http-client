@@ -149,14 +149,15 @@ class RequestFactory implements RequestFactoryInterface
             return null;
         }
 
+        $post = $this->replacePreservingType($post, $placeholders, $values);
+
         if ($this->isJson($headers)) {
-            return json_encode($this->replace($post, $placeholders, $values));
+            return json_encode($post);
         }
 
         if(!isset($headers['Content-Type'])) {
             $headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
-        $post = $this->replaceAll($post, $placeholders, $values);
 
         return http_build_query($post);
     }
@@ -226,6 +227,27 @@ class RequestFactory implements RequestFactoryInterface
     private function replaceAll(array $options, array $placeholders, array $values)
     {
         foreach ($options as $key => $option) {
+            $options[$key] = $this->replace($option, $placeholders, $values);
+        }
+
+        return $options;
+    }
+
+    /**
+     * @param array $options
+     * @param array $placeholders
+     * @param array $values
+     *
+     * @return array
+     */
+    private function replacePreservingType(array $options, array $placeholders, array $values)
+    {
+        foreach ($options as $key => $option) {
+            $plKey = array_search($option, $placeholders);
+            if ($plKey !== false) {
+                $options[$key] = $values[$plKey];
+                continue;
+            }
             $options[$key] = $this->replace($option, $placeholders, $values);
         }
 
