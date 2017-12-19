@@ -6,6 +6,7 @@ use Cmp\Http\Exception\RequestExecutionException;
 use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\Sender\SenderInterface;
+use Cmp\Monitoring\Monitor;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
@@ -25,6 +26,16 @@ trait ClientTrait
     abstract protected function logger();
 
     /**
+     * @return Monitor
+     */
+    abstract protected function monitor();
+
+    /**
+     * @return string
+     */
+    abstract protected function getMetricName();
+
+    /**
      * Executes a request returning back the response
      *
      * @param Request $request
@@ -36,6 +47,7 @@ trait ClientTrait
      */
     public function send(Request $request)
     {
+        $this->monitor()->start($this->getMetricName(), ['request_name' => 'abc']);
         $this->logger()->debug('Sending request. {request}', [
             'request'  => $request,
         ]);
@@ -46,6 +58,7 @@ trait ClientTrait
             'request'  => $request,
             'response' => $response,
         ]);
+        $this->monitor()->end($this->getMetricName());
 
         return $response;
     }
