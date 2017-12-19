@@ -8,7 +8,7 @@ use Cmp\Http\Client\Traits\ServiceClientTrait;
 use Cmp\Http\Message\Request;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
-use Cmp\Monitoring\Monitor;
+use Cmp\Http\Integration\Monitor;
 use Psr\Log\LoggerInterface;
 
 /**

@@ -6,8 +6,7 @@
     "require": {
         "php": ">=5.5",
         "psr/log": "^1.0",
-        "guzzlehttp/psr7": "^1.0",
-        "pluggit/monitoring": "2.1.0"
+        "guzzlehttp/psr7": "^1.0"
     },
     "require-dev": {
         "phpspec/phpspec": "^2.5",

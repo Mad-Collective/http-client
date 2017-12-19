@@ -8,7 +8,7 @@ use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
-use Cmp\Monitoring\Monitor;
+use Cmp\Http\Integration\Monitor;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;

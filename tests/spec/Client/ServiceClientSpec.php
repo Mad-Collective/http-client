@@ -11,7 +11,7 @@ use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
-use Cmp\Monitoring\Monitor;
+use Cmp\Http\Integration\Monitor;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
@@ -107,7 +107,7 @@ class ServiceClientSpec extends ObjectBehavior
         $request->getRequestKey()->willReturn('user');
         $request->getServiceKey()->willReturn('sample_api');
 
-        $monitor->start('external_requests', ['request_name' => 'sample_api.user'])->shouldBeCalled();
+        $monitor->start('external_requests', ['service_key' => 'sample_api', 'request_key' => 'user'])->shouldBeCalled();
         $monitor->end('external_requests')->shouldBeCalled();
 
         $this->executeFromJson('bar', $jsonSerializable)->shouldBeAnInstanceOf(Response::class);
@@ -168,7 +168,7 @@ class ServiceClientSpec extends ObjectBehavior
         $logger->error(Argument::any(), Argument::withEntry('message', 'first try'))->shouldHaveBeenCalled();
         $logger->error(Argument::any(), Argument::withEntry('message', 'second try'))->shouldHaveBeenCalled();
 
-        $monitor->start('external_requests', ['request_name' => 'sample_api.user'])->shouldBeCalled();
+        $monitor->start('external_requests', ['service_key' => 'sample_api', 'request_key' => 'user'])->shouldBeCalled();
         $monitor->end('external_requests')->shouldNotBeCalled();
     }
 
