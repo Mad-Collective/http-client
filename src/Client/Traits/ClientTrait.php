@@ -47,7 +47,7 @@ trait ClientTrait
      */
     public function send(Request $request)
     {
-        $this->monitor()->start($this->getMetricName(), ['request_name' => 'abc']);
+        $this->monitor()->start($this->getMetricName(), ['request_name' => $request->getServiceKey().'.'.$request->getRequestKey()]);
         $this->logger()->debug('Sending request. {request}', [
             'request'  => $request,
         ]);
