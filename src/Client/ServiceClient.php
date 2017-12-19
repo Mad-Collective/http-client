@@ -8,6 +8,7 @@ use Cmp\Http\Client\Traits\ServiceClientTrait;
 use Cmp\Http\Message\Request;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
+use Cmp\Http\Integration\Monitor;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -32,9 +33,9 @@ class ServiceClient extends AbstractClient implements ServiceClientInterface
      * @param LoggerInterface         $logger
      * @param string                  $service
      */
-    public function __construct(RequestFactoryInterface $factory, SenderInterface $sender, LoggerInterface $logger, $service)
+    public function __construct(RequestFactoryInterface $factory, SenderInterface $sender, LoggerInterface $logger, Monitor $monitor, $metricName, $service)
     {
-        parent::__construct($factory, $sender, $logger);
+        parent::__construct($factory, $sender, $logger, $monitor, $metricName);
         $this->service = $service;
     }
 

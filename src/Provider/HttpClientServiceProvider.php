@@ -66,6 +66,7 @@ class HttpClientServiceProvider implements ServiceProviderInterface
         $this->setFactory($builder, $pimple);
         $this->setSender($builder, $pimple);
         $this->setLogger($builder, $pimple);
+        $this->setMonitor($builder, $pimple);
 
         return $builder;
     }
@@ -111,6 +112,15 @@ class HttpClientServiceProvider implements ServiceProviderInterface
         }
     }
 
+    private function setMonitor(ClientBuilder $builder, Container $pimple)
+    {
+        if ($pimple['http_client.metric_name'] && $pimple['http_client.monitor']) {
+            $builder->withMonitor($pimple['http_client.monitor'], $pimple['http_client.metric_name']);
+        } elseif ($pimple['http_client.debug']) {
+            $builder->withConsoleDebug();
+        }
+    }
+
     /**
      * @param Container $pimple
      *
@@ -126,6 +136,8 @@ class HttpClientServiceProvider implements ServiceProviderInterface
         $pimple['http_client.guzzle']  = null;
         $pimple['http_client.factory'] = null;
         $pimple['http_client.debug']   = null;
+        $pimple['http_client.metric_name'] = null;
+        $pimple['http_client.monitor']   = null;
 
         return $pimple;
     }

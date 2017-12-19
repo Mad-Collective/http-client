@@ -7,6 +7,8 @@ use Cmp\Http\Client\ServiceClient;
 use Cmp\Http\Exception\RuntimeException;
 use Cmp\Http\Sender\GuzzleSender;
 use Cmp\Http\Sender\SenderInterface;
+use Cmp\Http\Integration\Monitor;
+use Cmp\Http\Integration\NullMonitor;
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Log\LoggerInterface;
@@ -32,6 +34,16 @@ class ClientBuilder
      * @var LoggerInterface|null
      */
     private $logger;
+
+    /**
+     * @var Monitor
+     */
+    private $monitor;
+
+    /**
+     * @var string
+     */
+    private $metricName;
 
     /**
      * Returns a new instance to start start building the client
@@ -145,6 +157,19 @@ class ClientBuilder
     }
 
     /**
+     * @param Monitor $monitor
+     * @param string  $metricName
+     *
+     * @return $this
+     */
+    public function withMonitor(Monitor $monitor, $metricName)
+    {
+        $this->metricName = $metricName;
+        $this->monitor = $monitor;
+        return $this;
+    }
+
+    /**
      * Setups a logger to output debug information to the console
      *
      * @return $this
@@ -181,7 +206,12 @@ class ClientBuilder
             $this->logger = new NullLogger();
         }
 
-        return $this->buildClient($this->factory, $this->sender, $this->logger, $service);
+        if (!$this->monitor || !$this->metricName) {
+            $this->monitor = new NullMonitor();
+            $this->metricName = 'external_requests';
+        }
+
+        return $this->buildClient($this->factory, $this->sender, $this->logger, $this->monitor, $this->metricName, $service);
     }
 
     /**
@@ -206,6 +236,8 @@ class ClientBuilder
      * @param RequestFactoryInterface $factory
      * @param SenderInterface         $sender
      * @param LoggerInterface         $logger
+     * @param Monitor                 $monitor
+     * @param string                  $metricName
      * @param string|null             $service
      *
      * @return MultiClient|ServiceClient
@@ -214,10 +246,12 @@ class ClientBuilder
         RequestFactoryInterface $factory,
         SenderInterface $sender,
         LoggerInterface $logger,
+        Monitor $monitor,
+        $metricName,
         $service
     ) {
         return $service !== null
-            ? new ServiceClient($factory, $sender, $logger, $service)
-            : new MultiClient($factory, $sender, $logger);
+            ? new ServiceClient($factory, $sender, $logger, $monitor, $metricName, $service)
+            : new MultiClient($factory, $sender, $logger, $monitor, $metricName);
     }
 }
