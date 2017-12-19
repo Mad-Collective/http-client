@@ -8,6 +8,7 @@ use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
+use Cmp\Monitoring\Monitor;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -18,9 +19,9 @@ use Psr\Log\LoggerInterface;
  */
 class MultiClientSpec extends ObjectBehavior
 {
-    function let(RequestFactoryInterface $factory, SenderInterface $sender, LoggerInterface $logger)
+    function let(RequestFactoryInterface $factory, SenderInterface $sender, LoggerInterface $logger, Monitor $monitor)
     {
-        $this->beConstructedWith($factory, $sender, $logger);
+        $this->beConstructedWith($factory, $sender, $logger, $monitor, 'external_requests');
     }
 
     function it_is_initializable()

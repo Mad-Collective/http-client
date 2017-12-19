@@ -11,6 +11,7 @@ use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
+use Cmp\Monitoring\Monitor;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
@@ -22,9 +23,9 @@ use Psr\Log\LoggerInterface;
  */
 class ServiceClientSpec extends ObjectBehavior
 {
-    function let(RequestFactoryInterface $factory, SenderInterface $sender, LoggerInterface $logger)
+    function let(RequestFactoryInterface $factory, SenderInterface $sender, LoggerInterface $logger, Monitor $monitor)
     {
-        $this->beConstructedWith($factory, $sender, $logger, 'service');
+        $this->beConstructedWith($factory, $sender, $logger, $monitor, 'external_requests', 'service');
     }
 
     function it_is_initializable()
@@ -94,7 +95,8 @@ class ServiceClientSpec extends ObjectBehavior
         Request $request,
         SenderInterface $sender,
         ResponseInterface $psrResponse,
-        \JsonSerializable $jsonSerializable
+        \JsonSerializable $jsonSerializable,
+        Monitor $monitor
     ) {
         $params = ['key' => 'value'];
         $jsonSerializable->jsonSerialize()->willReturn($params);
@@ -102,6 +104,11 @@ class ServiceClientSpec extends ObjectBehavior
         $this->configureResponse(null, $psrResponse, $sender, $request, $factory, []);
         $request->getRetries()->willReturn(1);
         $request->withJsonPost($params)->willReturn($request);
+        $request->getRequestKey()->willReturn('user');
+        $request->getServiceKey()->willReturn('sample_api');
+
+        $monitor->start('external_requests', ['request_name' => 'sample_api.user'])->shouldBeCalled();
+        $monitor->end('external_requests')->shouldBeCalled();
 
         $this->executeFromJson('bar', $jsonSerializable)->shouldBeAnInstanceOf(Response::class);
     }
@@ -139,7 +146,7 @@ class ServiceClientSpec extends ObjectBehavior
         $this->jsonAsArray('bar', [1])->shouldReturn(['some' => 'thing']);
     }
 
-    function it_can_retry_a_failed_request(Request $request, SenderInterface $sender, LoggerInterface $logger)
+    function it_can_retry_a_failed_request(Request $request, SenderInterface $sender, LoggerInterface $logger, Monitor $monitor)
     {
         $firstException  = new \Exception("first try");
         $secondException = new \Exception("second try");
@@ -147,6 +154,8 @@ class ServiceClientSpec extends ObjectBehavior
 
         $request->getRetries()->willReturn(1);
         $request->__toString()->willReturn('request');
+        $request->getRequestKey()->willReturn('user');
+        $request->getServiceKey()->willReturn('sample_api');
 
         // Throw 2 exceptions
         $sender->send($request)->will(function () use ($sender, $request, $firstException, $secondException) {
@@ -158,6 +167,9 @@ class ServiceClientSpec extends ObjectBehavior
 
         $logger->error(Argument::any(), Argument::withEntry('message', 'first try'))->shouldHaveBeenCalled();
         $logger->error(Argument::any(), Argument::withEntry('message', 'second try'))->shouldHaveBeenCalled();
+
+        $monitor->start('external_requests', ['request_name' => 'sample_api.user'])->shouldBeCalled();
+        $monitor->end('external_requests')->shouldNotBeCalled();
     }
 
     private function configureResponse(
