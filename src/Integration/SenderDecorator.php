@@ -21,6 +21,7 @@ class SenderDecorator implements SenderInterface
      * SenderDecorator constructor.
      *
      * @param SenderInterface $sender
+     * @param Monitor         $monitor
      */
     public function __construct(SenderInterface $sender, Monitor $monitor)
     {

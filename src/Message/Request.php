@@ -30,15 +30,15 @@ class Request extends GuzzleRequest
     /**
      * Request constructor.
      *
-     * @param string $method
-     * @param null   $uri
-     * @param array  $headers
-     * @param null   $body
-     * @param string $version
-     * @param int    $retries
-     * @param array  $options
-     * @param string $serviceKey
-     * @param string $requestKey
+     * @param string                   $method
+     * @param UriInterface|string|null $uri
+     * @param array                    $headers
+     * @param null                     $body
+     * @param string                   $version
+     * @param int                      $retries
+     * @param array                    $options
+     * @param string                   $serviceKey
+     * @param string                   $requestKey
      */
     public function __construct(
         $method,
