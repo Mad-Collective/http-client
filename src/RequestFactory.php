@@ -49,7 +49,9 @@ class RequestFactory implements RequestFactoryInterface
             $body,
             $request['version'],
             $request['retries'],
-            $request['options']
+            $request['options'],
+            $serviceKey,
+            $requestKey
         );
     }
 
@@ -71,9 +73,11 @@ class RequestFactory implements RequestFactoryInterface
         $body = null,
         $version = '1.1',
         $retries = 0,
-        array $options = []
+        array $options = [],
+        $serviceKey,
+        $requestKey
     ) {
-        return new Request($method, $uri, $headers, $body, (string)$version, $retries, $options);
+        return new Request($method, $uri, $headers, $body, (string)$version, $retries, $options, $serviceKey, $requestKey);
     }
 
     /**
