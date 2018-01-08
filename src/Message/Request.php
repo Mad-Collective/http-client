@@ -18,6 +18,16 @@ class Request extends GuzzleRequest
     private $options = [];
 
     /**
+     * @var string
+     */
+    private $serviceKey;
+
+    /**
+     * @var string
+     */
+    private $requestKey;
+
+    /**
      * Request constructor.
      *
      * @param string                   $method
@@ -27,6 +37,8 @@ class Request extends GuzzleRequest
      * @param string                   $version
      * @param int                      $retries
      * @param array                    $options
+     * @param string                   $serviceKey
+     * @param string                   $requestKey
      */
     public function __construct(
         $method,
@@ -35,11 +47,15 @@ class Request extends GuzzleRequest
         $body = null,
         $version = '1.1',
         $retries = 0,
-        array $options = []
+        array $options = [],
+        $serviceKey = null,
+        $requestKey = null
     ) {
         parent::__construct($method, (string) $uri, $headers, $body, $version);
         $this->retries = $retries;
         $this->options = $options;
+        $this->serviceKey = $serviceKey;
+        $this->requestKey = $requestKey;
     }
 
     /**
@@ -88,7 +104,9 @@ class Request extends GuzzleRequest
             $this->getBody(),
             $this->getProtocolVersion(),
             $this->getRetries(),
-            $this->getOptions()
+            $this->getOptions(),
+            $this->getServiceKey(),
+            $this->getRequestKey()
         );
     }
 
@@ -116,7 +134,9 @@ class Request extends GuzzleRequest
             $body,
             $request->getProtocolVersion(),
             $request->getRetries(),
-            $request->getOptions()
+            $request->getOptions(),
+            $this->getServiceKey(),
+            $this->getRequestKey()
         );
     }
 
@@ -140,6 +160,22 @@ class Request extends GuzzleRequest
     public function isJson()
     {
         return strpos($this->getHeaderLine('Content-Type'), 'application/json') === 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequestKey()
+    {
+        return $this->requestKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServiceKey()
+    {
+        return $this->serviceKey;
     }
 
     /**
