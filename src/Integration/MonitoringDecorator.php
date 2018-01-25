@@ -46,7 +46,7 @@ class MonitoringDecorator implements SenderInterface
     {
         $this->monitor->start($this->metricName, ['service_key' => $request->getServiceKey(), 'request_key' => $request->getRequestKey()]);
         $response = $this->sender->send($request);
-        $this->monitor->end($this->metricName);
+        $this->monitor->end($this->metricName, ['response_status' => $response->getStatusCode()]);
         return $response;
     }
 }
