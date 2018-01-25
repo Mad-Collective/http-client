@@ -26,8 +26,9 @@ class MonitoringDecoratorSpec extends ObjectBehavior
         $request->getRequestKey()->willReturn('new_user');
         $request->getServiceKey()->willReturn('ss');
         $sender->send($request)->willReturn($response);
+        $response->getStatusCode()->willReturn(200);
         $monitor->start('test_metric', ['service_key' => 'ss', 'request_key' => 'new_user'])->shouldBeCalled();
-        $monitor->end('test_metric')->shouldBeCalled();
+        $monitor->end('test_metric', ['response_status' => 200])->shouldBeCalled();
         $this->send($request)->shouldReturn($response);
     }
 }
