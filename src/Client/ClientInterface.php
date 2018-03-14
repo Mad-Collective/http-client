@@ -5,6 +5,7 @@ namespace Cmp\Http\Client;
 use Cmp\Http\Exception\RequestExecutionException;
 use Cmp\Http\Exception\RuntimeException;
 use Cmp\Http\Message\Request;
+use Cmp\Http\Message\Response;
 
 /**
  * A client that can send requests
