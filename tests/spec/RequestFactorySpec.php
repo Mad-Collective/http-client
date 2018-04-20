@@ -55,7 +55,7 @@ class RequestFactorySpec extends ObjectBehavior
                 .'query_1=query_one&query_2=replaced_query_2&query_3=three'
             );
 
-        $request->getBody()->__toString()->shouldBe('{"body_1":"body_one","body_2":"replaced_body_2","body_3":"body_three"}');
+        $request->getBody()->__toString()->shouldBe('{"header_1":"replaced_header_1","header_3":"replaced_header_3","path":"replaced_path","query_2":"replaced_query_2","body_2":"replaced_body_2","body_1":"body_one","body_3":"body_three"}');
         $request->getProtocolVersion()->shouldBe('1.3');
         $request->getRetries()->shouldBe(4);
         $request->getOptions()->shouldBe([
@@ -90,8 +90,7 @@ class RequestFactorySpec extends ObjectBehavior
                 'http://service.com/v1/request_1/replaced_path?'
                 .'query_1=query_one&query_2=replaced_query_2&query_3=three'
             );
-
-        $request->getBody()->__toString()->shouldBe('{"body_1":"body_one","body_2":"replaced_\"body\"_2","body_3":"body_three"}');
+        $request->getBody()->__toString()->shouldBe('{"header_1":"replaced_header_1","header_3":"replaced_header_3","path":"replaced_path","query_2":"replaced_query_2","body_2":"replaced_\"body\"_2","body_1":"body_one","body_3":"body_three"}');
         $request->getProtocolVersion()->shouldBe('1.3');
         $request->getRetries()->shouldBe(4);
         $request->getOptions()->shouldBe([
@@ -109,7 +108,6 @@ class RequestFactorySpec extends ObjectBehavior
         ]);
 
         $request->shouldBeAnInstanceOf(Request::class);
-
         Assert::eq(
             json_decode($request->getBody()->__toString()->getWrappedObject(), true),
             [
@@ -117,6 +115,7 @@ class RequestFactorySpec extends ObjectBehavior
                 'body_2' => 555,
             ]
         );
+
     }
 
     function it_can_build_a_post_request_with_the_correct_header()
@@ -135,7 +134,7 @@ class RequestFactorySpec extends ObjectBehavior
             'header_1'     => ['${HEADER_1}'],
         ]);
 
-        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2');
+        $request->getBody()->__toString()->shouldBe('body_1=extra+body+1&body_2=body%2C2&body_3=body%2F3');
     }
 
     function it_can_build_a_post_request_with_default_value_when_content_type_is_not_set()

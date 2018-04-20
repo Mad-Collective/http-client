@@ -40,7 +40,7 @@ class RequestFactory implements RequestFactoryInterface
         $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
         $placeholders = $this->getPlaceholders($parameters);
         $values       = array_values($parameters);
-        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values);
+        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $parameters);
 
         return $this->buildRequest(
             $request['method'],
@@ -147,13 +147,13 @@ class RequestFactory implements RequestFactoryInterface
      *
      * @return string
      */
-    private function buildBody(array $post, array &$headers, array $placeholders, array $values)
+    private function buildBody(array $post, array &$headers, array $placeholders, array $values, array $parameters)
     {
         if (count($post) == 0) {
             return null;
         }
 
-        $post = $this->replacePreservingType($post, $placeholders, $values);
+        $post = array_merge($parameters, $this->replacePreservingType($post, $placeholders, $values));
 
         if ($this->isJson($headers)) {
             return json_encode($post);
