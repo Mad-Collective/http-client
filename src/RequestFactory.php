@@ -37,10 +37,11 @@ class RequestFactory implements RequestFactoryInterface
         $config       = $this->getParamOrFail($this->config, $serviceKey);
         $service      = $this->getServiceParams($config);
         $request      = $this->getRequestParams($config, $requestKey, $service);
+        $extraParams  = $this->getExtraParameters($request['body'], $parameters);
         $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
         $placeholders = $this->getPlaceholders($parameters);
         $values       = array_values($parameters);
-        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $parameters);
+        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $extraParams);
 
         return $this->buildRequest(
             $request['method'],
@@ -78,6 +79,25 @@ class RequestFactory implements RequestFactoryInterface
         $requestKey
     ) {
         return new Request($method, $uri, $headers, $body, (string)$version, $retries, $options, $serviceKey, $requestKey);
+    }
+
+    /**
+     * @param array $body
+     * @param array $parameters
+     *
+     * @return array
+     */
+    private function getExtraParameters(array $body, array $parameters)
+    {
+        foreach ($body as $k => $v) {
+            foreach ($parameters as $i => $j) {
+                if ($v == sprintf('${%s}',strtoupper($i))){
+                    unset($parameters[$i]);
+                    continue;
+                }
+            }
+        }
+        return $parameters;
     }
 
     /**
