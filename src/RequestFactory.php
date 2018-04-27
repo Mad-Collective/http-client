@@ -220,14 +220,14 @@ class RequestFactory implements RequestFactoryInterface
     private function separateParameters(array $body, array $parameters)
     {
         $keys = [];
-        foreach ($body as $k => $v) {
-            foreach ($parameters as $i => $j) {
-                $keys[] = strtoupper(sprintf('${%s}', $i));
+        foreach ($parameters as $i => $j) {
+            foreach ($body as $k => $v) {
                 if ($v == sprintf('${%s}',strtoupper($i))){
                     unset($parameters[$i]);
                     continue;
                 }
             }
+            $keys[] = strtoupper(sprintf('${%s}', $i));
         }
         return array($parameters, $keys);
     }
