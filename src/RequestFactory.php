@@ -196,22 +196,6 @@ class RequestFactory implements RequestFactoryInterface
     }
 
     /**
-     * @param array $parameters
-     *
-     * @return array
-     */
-    private function getPlaceholders(array $parameters)
-    {
-        $keys = [];
-
-        foreach (array_keys($parameters) as $key) {
-            $keys[] = strtoupper(sprintf('${%s}', $key));
-        }
-
-        return $keys;
-    }
-
-    /**
      * @param array $body
      * @param array $parameters
      *
