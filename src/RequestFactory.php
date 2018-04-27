@@ -37,11 +37,12 @@ class RequestFactory implements RequestFactoryInterface
         $config       = $this->getParamOrFail($this->config, $serviceKey);
         $service      = $this->getServiceParams($config);
         $request      = $this->getRequestParams($config, $requestKey, $service);
-        $extraParams  = $this->getExtraParameters($request['body'], $parameters);
         $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
-        $placeholders = $this->getPlaceholders($parameters);
+
+        list($optionalParameters, $placeholders) = $this->separateParameters($request['body'], $parameters);
+
         $values       = array_values($parameters);
-        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $extraParams);
+        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $optionalParameters);
 
         return $this->buildRequest(
             $request['method'],
@@ -79,25 +80,6 @@ class RequestFactory implements RequestFactoryInterface
         $requestKey
     ) {
         return new Request($method, $uri, $headers, $body, (string)$version, $retries, $options, $serviceKey, $requestKey);
-    }
-
-    /**
-     * @param array $body
-     * @param array $parameters
-     *
-     * @return array
-     */
-    private function getExtraParameters(array $body, array $parameters)
-    {
-        foreach ($body as $k => $v) {
-            foreach ($parameters as $i => $j) {
-                if ($v == sprintf('${%s}',strtoupper($i))){
-                    unset($parameters[$i]);
-                    continue;
-                }
-            }
-        }
-        return $parameters;
     }
 
     /**
@@ -228,6 +210,28 @@ class RequestFactory implements RequestFactoryInterface
 
         return $keys;
     }
+
+    /**
+     * @param array $body
+     * @param array $parameters
+     *
+     * @return array
+     */
+    private function separateParameters(array $body, array $parameters)
+    {
+        $keys = [];
+        foreach ($body as $k => $v) {
+            foreach ($parameters as $i => $j) {
+                $keys[] = strtoupper(sprintf('${%s}', $i));
+                if ($v == sprintf('${%s}',strtoupper($i))){
+                    unset($parameters[$i]);
+                    continue;
+                }
+            }
+        }
+        return array($parameters, $keys);
+    }
+
 
     /**
      * @param string|array $option
