@@ -38,9 +38,11 @@ class RequestFactory implements RequestFactoryInterface
         $service      = $this->getServiceParams($config);
         $request      = $this->getRequestParams($config, $requestKey, $service);
         $uri          = $this->buildUri($service['endpoint'], $request['path'], $request['query']);
-        $placeholders = $this->getPlaceholders($parameters);
+
+        list($optionalParameters, $placeholders) = $this->separateParameters($request['body'], $parameters);
+
         $values       = array_values($parameters);
-        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $parameters);
+        $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $optionalParameters);
 
         return $this->buildRequest(
             $request['method'],
@@ -194,20 +196,26 @@ class RequestFactory implements RequestFactoryInterface
     }
 
     /**
+     * @param array $body
      * @param array $parameters
      *
      * @return array
      */
-    private function getPlaceholders(array $parameters)
+    private function separateParameters(array $body, array $parameters)
     {
         $keys = [];
-
-        foreach (array_keys($parameters) as $key) {
-            $keys[] = strtoupper(sprintf('${%s}', $key));
+        foreach ($parameters as $i => $j) {
+            foreach ($body as $k => $v) {
+                if ($v == sprintf('${%s}',strtoupper($i))){
+                    unset($parameters[$i]);
+                    continue;
+                }
+            }
+            $keys[] = strtoupper(sprintf('${%s}', $i));
         }
-
-        return $keys;
+        return array($parameters, $keys);
     }
+
 
     /**
      * @param string|array $option
