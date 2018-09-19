@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ]
   then
-    VERSIONS="5.5 5.6 7.0";
+    VERSIONS="7.1 7.2";
   else
     VERSIONS="$1";
 fi

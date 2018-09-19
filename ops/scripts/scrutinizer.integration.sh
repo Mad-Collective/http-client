@@ -10,7 +10,7 @@ function test {
   php bin/behat --no-interaction
 }
 
-for version in hhvm 5.5.25 5.6.16 7.0.7; do
+for version in 7.1 7.2; do
   echo "Testing PHP $version"
   test $version
 done

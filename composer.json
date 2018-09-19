@@ -4,17 +4,17 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": ">=5.5",
+        "php": "^7.1.3",
         "psr/log": "^1.0",
         "guzzlehttp/psr7": "^1.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^2.5",
+        "phpspec/phpspec": "3.3.*",
         "behat/behat": "^3.1",
         "phpunit/php-code-coverage": "^2.2",
         "guzzlehttp/guzzle": "^6.0",
-        "symfony/console": ">=2.0 <4",
-        "symfony/yaml": ">=2.0 <4",
+        "symfony/console": "^3.0 || ^4.0",
+        "symfony/yaml": "^3.0 || ^4.0",
         "pimple/pimple": "^3.0",
         "php-mock/php-mock": "^1.0",
         "pluggit/monitoring": "^1.0"
