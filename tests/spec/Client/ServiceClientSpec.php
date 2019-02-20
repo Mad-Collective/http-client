@@ -11,6 +11,8 @@ use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\TransferException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
@@ -141,8 +143,8 @@ class ServiceClientSpec extends ObjectBehavior
 
     function it_can_retry_a_failed_request(Request $request, SenderInterface $sender, LoggerInterface $logger)
     {
-        $firstException  = new \Exception("first try");
-        $secondException = new \Exception("second try");
+        $firstException  = new ServerException("first try", $request->getWrappedObject());
+        $secondException = new TransferException("second try");
         $finalException  = new RequestExecutionException($secondException);
 
         $request->getRetries()->willReturn(1);
@@ -158,6 +160,24 @@ class ServiceClientSpec extends ObjectBehavior
 
         $logger->error(Argument::any(), Argument::withEntry('message', 'first try'))->shouldHaveBeenCalled();
         $logger->error(Argument::any(), Argument::withEntry('message', 'second try'))->shouldHaveBeenCalled();
+    }
+
+    function it_doesnt_retry_a_failed_request(Request $request, SenderInterface $sender, LoggerInterface $logger)
+    {
+        $exception  = new \Exception("generic exception");
+        $finalException  = new RequestExecutionException($exception);
+
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('request');
+
+        // Throw 1 exception
+        $sender->send($request)->will(function () use ($sender, $request, $exception) {
+            throw $exception;
+        });
+
+        $this->shouldThrow($finalException)->duringSend($request);
+
+        $logger->error(Argument::any(), Argument::withEntry('message', 'generic exception'))->shouldHaveBeenCalled();
     }
 
     private function configureResponse(

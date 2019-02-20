@@ -6,6 +6,8 @@ use Cmp\Http\Exception\RequestExecutionException;
 use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\Sender\SenderInterface;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\TransferException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
@@ -60,11 +62,15 @@ trait ClientTrait
     {
         try {
             return $this->fromPsrResponse($this->sender()->send($request));
-        } catch (\Exception $exception) {
+        } catch (ServerException | TransferException $exception) {
             $this->logErrorSendingRequest($request, $retriesLeft, $exception);
             if ($retriesLeft > 0) {
                 return $this->sendOrRetry($request, --$retriesLeft);
             }
+
+            throw new RequestExecutionException($exception);
+        } catch (\Exception $exception) {
+            $this->logErrorSendingRequest($request, $retriesLeft, $exception);
 
             throw new RequestExecutionException($exception);
         }
