@@ -37,14 +37,14 @@ trait ClientTrait
     public function send(Request $request)
     {
         $this->logger()->debug('Sending request. {request}', [
-            'request'  => $request,
+            'request'  => (string) $request,
         ]);
 
         $response = $this->sendOrRetry($request, $request->getRetries());
 
         $this->logger()->debug('Response received. {response}', [
-            'request'  => $request,
-            'response' => $response,
+            'request'  => (string) $request,
+            'response' => (string) $response,
         ]);
 
         return $response;
@@ -95,8 +95,8 @@ trait ClientTrait
     {
         $this->logger()->error("Error sending request: {message}. {retries_left} retries left. Request {request}", [
             'message'      => $exception->getMessage(),
-            'request'      => $request,
-            'exception'    => $exception,
+            'request'      => (string) $request,
+            'exception'    => (string) $exception,
             'retries_left' => $retriesLeft,
         ]);
     }
