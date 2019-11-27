@@ -56,7 +56,7 @@ trait RequestBuilderTrait
             'message'   => $exception->getMessage(),
             'service'   => $service,
             'request'   => $request,
-            'exception' => (string) $exception
+            'exception' => $exception
         ]);
     }
 }

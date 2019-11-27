@@ -102,7 +102,7 @@ trait ClientTrait
         $this->logger()->error("Error sending request: {message}. {retries_left} retries left. Request {request}", [
             'message'      => $exception->getMessage(),
             'request'      => (string) $request,
-            'exception'    => (string) $exception,
+            'exception'    => $exception,
             'retries_left' => $retriesLeft,
         ]);
     }
