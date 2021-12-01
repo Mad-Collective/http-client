@@ -2,9 +2,9 @@
 
 Small PSR7 compatible library to perform http requests based on pre-configured set of requests
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/CMProductions/http-client/badges/quality-score.png?b=master&s=0c6f482c48d0759ef1f4b2c6015469be3984ea0b)](https://scrutinizer-ci.com/g/CMProductions/http-client/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/CMProductions/http-client/badges/coverage.png?b=master&s=81094879399190f548440b163be5b2fd9ec1b135)](https://scrutinizer-ci.com/g/CMProductions/http-client/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/CMProductions/http-client/badges/build.png?b=master&s=4980b96726a88a92c3a7355a270b1bc1148207ce)](https://scrutinizer-ci.com/g/CMProductions/http-client/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Mad-Collective/http-client/badges/quality-score.png?b=master&s=0c6f482c48d0759ef1f4b2c6015469be3984ea0b)](https://scrutinizer-ci.com/g/Mad-Collective/http-client/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/Mad-Collective/http-client/badges/coverage.png?b=master&s=81094879399190f548440b163be5b2fd9ec1b135)](https://scrutinizer-ci.com/g/Mad-Collective/http-client/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/Mad-Collective/http-client/badges/build.png?b=master&s=4980b96726a88a92c3a7355a270b1bc1148207ce)](https://scrutinizer-ci.com/g/Mad-Collective/http-client/build-status/master)
 
 ## TL;DR
 ```yaml
