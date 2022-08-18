@@ -176,12 +176,16 @@ class RequestFactorySpec extends ObjectBehavior
 
     function it_not_overriding_placehoders_with_extra_parms()
     {
-        $request = $this->create('service', 'request_4', [
-            'body_mandatory' => 'body 1',
-            'body_collision' => 'body 2',
-            'body_extra' => 'body 3',
-            'body_2' =>""
-        ]);
+        $request = $this->create(
+            'service',
+            'request_4',
+            [
+                'body_mandatory' => 'body 1',
+                'body_collision' => 'body 2',
+                'body_extra' => 'body 3',
+                'body_2' =>""
+            ]
+        );
 
         $request->shouldBeAnInstanceOf(Request::class);
 

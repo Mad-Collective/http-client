@@ -8,9 +8,19 @@ services:
         - "8083:8083"
       volumes:
         - ./mmock/config:/config
-  phpfarm:
-      build: phpfarm
-      volumes:
-        - ../../:/app/http-client
-      links:
-        - mmock
+#  php80:
+#    build: ./80
+#    volumes:
+#      - ../../:/app/http-client
+#    working_dir: /app/http-client
+#    command: [bash, -c, "composer install && make test"]
+#    links:
+#      - mmock
+  php81:
+    build: ./81
+    volumes:
+      - ../../:/app/http-client
+    working_dir: /app/http-client
+    command: [bash, -c, "composer install && make test"]
+    links:
+      - mmock

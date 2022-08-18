@@ -35,6 +35,9 @@ class MultiClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
+
         $this->configureResponse(null, $psrResponse, $sender, $request, $factory);
 
         $this->execute('service', 'bar', [1])->shouldBeAnInstanceOf(Response::class);
@@ -46,6 +49,9 @@ class MultiClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
+
         $this->configureResponse('body', $psrResponse, $sender, $request, $factory);
 
         $this->body('service', 'bar', [1])->shouldBeAnInstanceOf(StreamInterface::class);
@@ -57,6 +63,9 @@ class MultiClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
+
         $this->configureResponse('{"some":"thing"}', $psrResponse, $sender, $request, $factory);
 
         $this->json('service', 'bar', [1])->shouldBeAnInstanceOf(\stdClass::class);
@@ -68,6 +77,9 @@ class MultiClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
+
         $this->configureResponse('{"some":"thing"}', $psrResponse, $sender, $request, $factory);
 
         $this->jsonAsArray('service', 'bar', [1])->shouldReturn(['some' => 'thing']);

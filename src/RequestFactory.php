@@ -45,15 +45,15 @@ class RequestFactory implements RequestFactoryInterface
         $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $optionalParameters);
 
         return $this->buildRequest(
+            $serviceKey,
+            $requestKey,
             $request['method'],
             $this->replace($uri, $placeholders, $values),
             $this->replaceAll($request['headers'], $placeholders, $values),
             $body,
             $request['version'],
             $request['retries'],
-            $request['options'],
-            $serviceKey,
-            $requestKey
+            $request['options']
         );
     }
 
@@ -69,15 +69,15 @@ class RequestFactory implements RequestFactoryInterface
      * @return Request
      */
     protected function buildRequest(
+        $serviceKey,
+        $requestKey,
         $method,
         $uri,
         array $headers,
         $body = null,
         $version = '1.1',
         $retries = 0,
-        array $options = [],
-        $serviceKey,
-        $requestKey
+        array $options = []
     ) {
         return new Request($method, $uri, $headers, $body, (string)$version, $retries, $options, $serviceKey, $requestKey);
     }

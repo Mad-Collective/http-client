@@ -70,6 +70,9 @@ class ServiceClientSpec extends ObjectBehavior
         ResponseInterface $psrResponse,
         LoggerInterface $logger
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
+
         $this->configureResponse(null, $psrResponse, $sender, $request);
 
         $this->send($request)->shouldBeAnInstanceOf(Response::class);
@@ -86,6 +89,9 @@ class ServiceClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
+
         $this->configureResponse(null, $psrResponse, $sender, $request, $factory);
 
         $this->execute('bar', [1])->shouldBeAnInstanceOf(Response::class);
@@ -102,6 +108,7 @@ class ServiceClientSpec extends ObjectBehavior
         $jsonSerializable->jsonSerialize()->willReturn($params);
 
         $this->configureResponse(null, $psrResponse, $sender, $request, $factory, []);
+        $request->__toString()->willReturn('somestring');
         $request->getRetries()->willReturn(1);
         $request->withJsonPost($params)->willReturn($request);
 
@@ -114,6 +121,8 @@ class ServiceClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
         $this->configureResponse('body', $psrResponse, $sender, $request, $factory);
 
         $this->body('bar', [1])->shouldBeAnInstanceOf(StreamInterface::class);
@@ -125,6 +134,8 @@ class ServiceClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
         $this->configureResponse('{"some":"thing"}', $psrResponse, $sender, $request, $factory);
 
         $this->json('bar', [1])->shouldBeAnInstanceOf(\stdClass::class);
@@ -136,6 +147,8 @@ class ServiceClientSpec extends ObjectBehavior
         SenderInterface $sender,
         ResponseInterface $psrResponse
     ) {
+        $request->getRetries()->willReturn(1);
+        $request->__toString()->willReturn('somestring');
         $this->configureResponse('{"some":"thing"}', $psrResponse, $sender, $request, $factory);
 
         $this->jsonAsArray('bar', [1])->shouldReturn(['some' => 'thing']);

@@ -24,19 +24,10 @@ endif
 
 test: unit integration
 unit:
-	make dev
-	@docker exec -t $(shell docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml ps -q ${CONTAINER}) \
-	 ${APP_ROOT}/ops/scripts/unit.sh ${PHP_VERSION}
+	@${APP_ROOT}/ops/scripts/unit.sh
 
 integration:
-	make dev
-	@docker exec -t $(shell docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml ps -q ${CONTAINER}) \
-	 ${APP_ROOT}/ops/scripts/integration.sh ${PHP_VERSION}
-
-code-coverage:
-	make dev
-	@docker exec -t $(shell docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml ps -q ${CONTAINER}) \
-	 php-5.6 ${APP_ROOT}/bin/http tests:run html
+	@${APP_ROOT}/ops/scripts/integration.sh
 
 ps: status
 status:
