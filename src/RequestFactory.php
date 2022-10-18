@@ -226,6 +226,9 @@ class RequestFactory implements RequestFactoryInterface
      */
     private function replace($option, array $placeholders, array $values)
     {
+        $values = array_map(function($elem) {
+            return is_array($elem) ? array_values($elem) : $elem;
+        }, $values);
         return str_replace($placeholders, $values, $option);
     }
 
