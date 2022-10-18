@@ -143,6 +143,7 @@ class RequestFactorySpec extends ObjectBehavior
         $request = $this->create('missing_content_type', 'request', [
             'body_1' => 'body 1',
             'body_2' => 'body,2',
+            'body_3' => ['body', '3']
         ]);
 
         $request->shouldBeAnInstanceOf(Request::class);
