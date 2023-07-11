@@ -76,8 +76,8 @@ class RequestFactory implements RequestFactoryInterface
         $version = '1.1',
         $retries = 0,
         array $options = [],
-        $serviceKey,
-        $requestKey
+        $serviceKey = null,
+        $requestKey = null,
     ) {
         return new Request($method, $uri, $headers, $body, (string)$version, $retries, $options, $serviceKey, $requestKey);
     }
