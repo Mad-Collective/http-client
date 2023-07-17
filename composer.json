@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "psr/log": "^3.0",
+        "psr/log": "^2.0",
         "guzzlehttp/psr7": "^1.0"
     },
     "require-dev": {
@@ -16,9 +16,9 @@
         "symfony/yaml": "^4.0",
         "pimple/pimple": "^3.0",
         "php-mock/php-mock": "^1.0",
-        "pluggit/monitoring": "dev-master",
+        "pluggit/monitoring": "dev-compatibility-psr-log-2",
         "symfony/var-dumper": "^5.4",
-        "symfony/console": "^5.3"
+        "symfony/console": "^5.4"
     },
     "suggest": {
         "guzzlehttp/guzzle": "Allows the library to send requests",
