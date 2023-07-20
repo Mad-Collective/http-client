@@ -43,11 +43,19 @@ class RequestFactory implements RequestFactoryInterface
 
         $values       = array_values($parameters);
         $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $optionalParameters);
+        $valuesToReplace = [];
+        foreach ($values as $index => $aValue) {
+            if (\is_string($aValue)) {
+                $valuesToReplace[$index] = $aValue;
+                continue;
+            }
+            $valuesToReplace[$index] = '';
+        }
 
         return $this->buildRequest(
             $request['method'],
-            $this->replace($uri, $placeholders, $values),
-            $this->replaceAll($request['headers'], $placeholders, $values),
+            $this->replace($uri, $placeholders, $valuesToReplace),
+            $this->replaceAll($request['headers'], $placeholders, $valuesToReplace),
             $body,
             $request['version'],
             $request['retries'],
