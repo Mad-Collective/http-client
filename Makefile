@@ -1,5 +1,5 @@
 COMPONENT := pluggithttpclient
-CONTAINER := phpfarm
+CONTAINER := client-php
 IMAGES ?= false
 PHP_VERSION ?: false
 APP_ROOT := /app/http-client
@@ -7,10 +7,10 @@ APP_ROOT := /app/http-client
 all: dev logs
 
 dev:
-	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml up -d
+	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml up -d --build
 
 enter:
-	@docker exec -ti ${COMPONENT}_${CONTAINER}_1 /bin/bash
+	@docker exec -ti ${COMPONENT}_${CONTAINER}_1 /bin/sh
 
 kill:
 	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml kill
