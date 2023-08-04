@@ -45,7 +45,7 @@ class RequestFactory implements RequestFactoryInterface
         $body         = $this->buildBody($request['body'], $request['headers'], $placeholders, $values, $optionalParameters);
         $valuesToReplace = [];
         foreach ($values as $index => $aValue) {
-            if (\is_string($aValue)) {
+            if (false === \is_array($aValue)) {
                 $valuesToReplace[$index] = $aValue;
                 continue;
             }
