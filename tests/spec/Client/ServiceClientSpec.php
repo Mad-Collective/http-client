@@ -188,6 +188,9 @@ class ServiceClientSpec extends ObjectBehavior
         RequestFactoryInterface $factory = null,
         $parameters = [1]
     ) {
+        $request->__toString()->willReturn('GET / HTTP/1.1');
+        $request->getRetries()->willReturn(0);
+
         if ($factory) {
             $factory->create('service', 'bar', $parameters)->willReturn($request);
         }
