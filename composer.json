@@ -16,7 +16,7 @@
         "symfony/yaml": "^4.0",
         "pimple/pimple": "^3.0",
         "php-mock/php-mock": "^1.0",
-        "pluggit/monitoring": "dev-compatibility-psr-log-2",
+        "pluggit/monitoring": "^4.0",
         "symfony/var-dumper": "^5.4",
         "symfony/console": "^5.4"
     },
