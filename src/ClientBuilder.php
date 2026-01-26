@@ -18,27 +18,16 @@ use Symfony\Component\Yaml\Yaml;
 
 class ClientBuilder
 {
-    /**
-     * @var SenderInterface
-     */
-    private $sender;
-
-    /**
-     * @var RequestFactoryInterface
-     */
-    private $factory;
-
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
+    private SenderInterface $sender;
+    private RequestFactoryInterface $factory;
+    private LoggerInterface $logger;
 
     /**
      * Returns a new instance to start start building the client
      * 
      * @return ClientBuilder
      */
-    public static function create()
+    public static function create(): ClientBuilder
     {
         return new self();
     }
@@ -66,7 +55,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withGuzzleSender(GuzzleClientInterface $client = null)
+    public function withGuzzleSender(GuzzleClientInterface|null $client = null)
     {
         $this->sender = $this->buildGuzzleSender($client);
 
@@ -167,9 +156,9 @@ class ClientBuilder
      *
      * @return Client
      */
-    public function build($service = null)
+    public function build(?string $service = null)
     {
-        if (!$this->sender) {
+        if ($this->sender) {
             $this->sender = $this->buildGuzzleSender();
         }
 
@@ -184,12 +173,7 @@ class ClientBuilder
         return $this->buildClient($this->factory, $this->sender, $this->logger, $service);
     }
 
-    /**
-     * @param GuzzleClientInterface|null $client
-     *
-     * @return GuzzleClientSender
-     */
-    private function buildGuzzleSender(GuzzleClientInterface $client = null)
+    private function buildGuzzleSender(GuzzleClientInterface|null $client = null): GuzzleClient|GuzzleSender
     {
         if (!$client) {
             if (!class_exists(GuzzleClient::class)) {
