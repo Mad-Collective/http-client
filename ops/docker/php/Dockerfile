@@ -1,4 +1,4 @@
-FROM php:8.0-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 WORKDIR /app/http-client
 VOLUME ["/app/http-client"]

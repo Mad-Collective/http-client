@@ -18,12 +18,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class ClientBuilder
 {
-    private SenderInterface $sender;
-    private RequestFactoryInterface $factory;
-    private LoggerInterface $logger;
+    private ?SenderInterface $sender = null;
+    private ?RequestFactoryInterface $factory = null;
+    private ?LoggerInterface $logger = null;
 
     /**
-     * Returns a new instance to start start building the client
+     * Returns a new instance to start building the client
      * 
      * @return ClientBuilder
      */
@@ -39,7 +39,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withSender(SenderInterface $sender)
+    public function withSender(SenderInterface $sender): static
     {
         $this->sender = $sender;
 
@@ -55,7 +55,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withGuzzleSender(GuzzleClientInterface|null $client = null)
+    public function withGuzzleSender(GuzzleClientInterface|null $client = null): static
     {
         $this->sender = $this->buildGuzzleSender($client);
 
@@ -69,7 +69,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withConfig(array $config)
+    public function withConfig(array $config): static
     {
         $this->factory = new RequestFactory($config);
 
@@ -83,7 +83,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withRequestFactory(RequestFactoryInterface $factory)
+    public function withRequestFactory(RequestFactoryInterface $factory): static
     {
         $this->factory = $factory;
 
@@ -99,7 +99,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withYamlConfig($file)
+    public function withYamlConfig($file): static
     {
         if (!class_exists(Yaml::class)) {
             throw new RuntimeException("You need to install 'symfony/yaml' to use this feature");
@@ -126,7 +126,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withLogger(LoggerInterface $logger)
+    public function withLogger(LoggerInterface $logger): static
     {
         $this->logger = $logger;
 
@@ -138,7 +138,7 @@ class ClientBuilder
      *
      * @return $this
      */
-    public function withConsoleDebug()
+    public function withConsoleDebug(): static
     {
         if (!class_exists(ConsoleLogger::class)) {
             throw new RuntimeException("You need to install 'symfony/console' to use this feature");
@@ -154,11 +154,11 @@ class ClientBuilder
      *
      * @param string|null $service
      *
-     * @return Client
+     * @return MultiClient|ServiceClient
      */
-    public function build(?string $service = null)
+    public function build(?string $service = null): MultiClient|ServiceClient
     {
-        if ($this->sender) {
+        if (!$this->sender) {
             $this->sender = $this->buildGuzzleSender();
         }
 
@@ -190,7 +190,7 @@ class ClientBuilder
      * @param RequestFactoryInterface $factory
      * @param SenderInterface         $sender
      * @param LoggerInterface         $logger
-     * @param string|null             $service
+     * @param string|null $service
      *
      * @return MultiClient|ServiceClient
      */
@@ -198,8 +198,9 @@ class ClientBuilder
         RequestFactoryInterface $factory,
         SenderInterface $sender,
         LoggerInterface $logger,
-        $service
-    ) {
+        ?string $service
+    ): MultiClient|ServiceClient
+    {
         return $service !== null
             ? new ServiceClient($factory, $sender, $logger, $service)
             : new MultiClient($factory, $sender, $logger);
