@@ -3,20 +3,26 @@
     "description": "A config-driven library to execute HTTP requests",
     "type": "library",
     "license": "MIT",
+    "repositories": {
+        "pluggit/monitoring": {
+            "type": "vcs",
+            "url": "git@github.com:Mad-Collective/monitoring.git"
+        }
+    },
     "require": {
-        "php": "^8.0",
+        "php": "^8.4",
         "psr/log": "^2.0",
-        "guzzlehttp/psr7": "^1.0"
+        "guzzlehttp/psr7": "^2.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^7",
+        "phpspec/phpspec": "^8.0",
         "behat/behat": "^3.1",
         "phpunit/php-code-coverage": "^2.2",
-        "guzzlehttp/guzzle": "^6.0",
-        "symfony/yaml": "^4.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "symfony/yaml": "^5.0",
         "pimple/pimple": "^3.0",
         "php-mock/php-mock": "^1.0",
-        "pluggit/monitoring": "^4.0",
+        "pluggit/monitoring": "^5.0",
         "symfony/var-dumper": "^5.4",
         "symfony/console": "^5.4"
     },

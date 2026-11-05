@@ -13,6 +13,7 @@ use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\Utils;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
@@ -141,9 +142,15 @@ class ServiceClientSpec extends ObjectBehavior
         $this->jsonAsArray('bar', [1])->shouldReturn(['some' => 'thing']);
     }
 
-    function it_can_retry_a_failed_request(Request $request, SenderInterface $sender, LoggerInterface $logger)
-    {
-        $firstException  = new ServerException("first try", $request->getWrappedObject());
+    function it_can_retry_a_failed_request(
+        Request $request,
+        SenderInterface $sender,
+        LoggerInterface $logger,
+        ResponseInterface $response
+    ) {
+        $response->getStatusCode()->willReturn(500);
+        $response->getBody()->willReturn(Utils::streamFor(''));
+        $firstException  = new ServerException("first try", $request->getWrappedObject(), $response->getWrappedObject(), null, []);
         $secondException = new TransferException("second try");
         $finalException  = new RequestExecutionException($secondException);
 
@@ -195,9 +202,11 @@ class ServiceClientSpec extends ObjectBehavior
             $factory->create('service', 'bar', $parameters)->willReturn($request);
         }
 
+        $stream = Utils::streamFor($body !== null ? $body : '');
+
         $psrResponse->getStatusCode()->willReturn(200);
         $psrResponse->getHeaders()->willReturn([]);
-        $psrResponse->getBody()->willReturn($body);
+        $psrResponse->getBody()->willReturn($stream);
         $psrResponse->getProtocolVersion()->willReturn('1.1');
         $psrResponse->getReasonPhrase()->willReturn('OK');
         $sender->send($request)->willReturn($psrResponse);

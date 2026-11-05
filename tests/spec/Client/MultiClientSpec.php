@@ -8,6 +8,7 @@ use Cmp\Http\Message\Request;
 use Cmp\Http\Message\Response;
 use Cmp\Http\RequestFactoryInterface;
 use Cmp\Http\Sender\SenderInterface;
+use GuzzleHttp\Psr7\Utils;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -87,9 +88,11 @@ class MultiClientSpec extends ObjectBehavior
             $factory->create('service', 'bar', [1])->willReturn($request);
         }
 
+        $stream = Utils::streamFor($body !== null ? $body : '');
+
         $psrResponse->getStatusCode()->willReturn(200);
         $psrResponse->getHeaders()->willReturn([]);
-        $psrResponse->getBody()->willReturn($body);
+        $psrResponse->getBody()->willReturn($stream);
         $psrResponse->getProtocolVersion()->willReturn('1.1');
         $psrResponse->getReasonPhrase()->willReturn('OK');
         $sender->send($request)->willReturn($psrResponse);
