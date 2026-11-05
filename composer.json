@@ -22,7 +22,7 @@
         "symfony/yaml": "^5.0",
         "pimple/pimple": "^3.0",
         "php-mock/php-mock": "^1.0",
-        "pluggit/monitoring": "dev-PHP8_4-compatibility",
+        "pluggit/monitoring": "^5.0",
         "symfony/var-dumper": "^5.4",
         "symfony/console": "^5.4"
     },
