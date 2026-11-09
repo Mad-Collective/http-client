@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15344f191f92a77e2f47726a71074b9f",
+    "content-hash": "27936630fd196096024b66ab800cf112",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -1805,16 +1805,16 @@
         },
         {
             "name": "pluggit/monitoring",
-            "version": "dev-PHP8_4-compatibility",
+            "version": "5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mad-Collective/monitoring.git",
-                "reference": "867c7be21e4e6b5f5b46bb90088c8a18dda93239"
+                "reference": "f672c9ed9a6abf35b3de9c22a77efecdf13475c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mad-Collective/monitoring/zipball/867c7be21e4e6b5f5b46bb90088c8a18dda93239",
-                "reference": "867c7be21e4e6b5f5b46bb90088c8a18dda93239",
+                "url": "https://api.github.com/repos/Mad-Collective/monitoring/zipball/f672c9ed9a6abf35b3de9c22a77efecdf13475c7",
+                "reference": "f672c9ed9a6abf35b3de9c22a77efecdf13475c7",
                 "shasum": ""
             },
             "require": {
@@ -1844,10 +1844,10 @@
             ],
             "description": "Monitoring abstraction layer",
             "support": {
-                "source": "https://github.com/Mad-Collective/monitoring/tree/PHP8_4-compatibility",
+                "source": "https://github.com/Mad-Collective/monitoring/tree/5.0.0",
                 "issues": "https://github.com/Mad-Collective/monitoring/issues"
             },
-            "time": "2026-01-26T12:23:55+00:00"
+            "time": "2026-11-09T10:47:03+00:00"
         },
         {
             "name": "psr/container",
@@ -4282,14 +4282,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pluggit/monitoring": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.4"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.11.0"
 }
