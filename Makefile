@@ -22,16 +22,22 @@ ifeq ($(IMAGES),true)
 	@docker rmi ${COMPONENT}_${CONTAINER}
 endif
 
+deps:
+	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml exec -T ${CONTAINER} \
+	 composer install
+
 test: unit integration
 unit:
 	make dev
-	@docker exec -t $(shell docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml ps -q ${CONTAINER}) \
-	 ${APP_ROOT}/ops/scripts/unit.sh ${PHP_VERSION}
+	make deps
+	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml exec -T ${CONTAINER} \
+	 ${APP_ROOT}/ops/scripts/unit.sh
 
 integration:
 	make dev
-	@docker exec -t $(shell docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml ps -q ${CONTAINER}) \
-	 ${APP_ROOT}/ops/scripts/integration.sh ${PHP_VERSION}
+	make deps
+	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml exec -T ${CONTAINER} \
+	 ${APP_ROOT}/ops/scripts/integration.sh
 
 code-coverage:
 	make dev

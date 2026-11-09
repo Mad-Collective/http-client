@@ -7,6 +7,7 @@ use Cmp\Http\Sender\GuzzleSender;
 use Cmp\Http\Sender\SenderInterface;
 use GuzzleHttp\ClientInterface;
 use PhpSpec\ObjectBehavior;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @mixin \Cmp\Http\Sender\GuzzleSender
@@ -24,9 +25,8 @@ class GuzzleSenderSpec extends ObjectBehavior
         $this->shouldHaveType(SenderInterface::class);
     }
 
-    function it_can_proxy_the_request_to_guzzle(Request $request, ClientInterface $client)
+    function it_can_proxy_the_request_to_guzzle(Request $request, ClientInterface $client, ResponseInterface $response)
     {
-        $response = true;
         $request->getOptions()->willReturn(['options']);
         $client->send($request, ['options'])->willReturn($response);
 
